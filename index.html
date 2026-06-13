@@ -7,7 +7,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Escala Eliezer - Ultra Premium</title>
+<title>Escala Eliezer - Ultra Premium v2.0</title>
 
 <style>
   :root {
@@ -22,6 +22,8 @@
     --primary-rgba: rgba(232, 85, 85, 0.15);
     --secondary: #38d9a9;
     --secondary-rgba: rgba(56, 217, 169, 0.15);
+    --warning: #ffc107;
+    --warning-rgba: rgba(255, 193, 7, 0.15);
     --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
   }
 
@@ -56,7 +58,7 @@
   .stat-card { background: var(--bg-card); border-radius: 14px; padding: 12px; text-align: center; border: 1px solid var(--border); }
   .stat-card .val { font-size: 20px; font-weight: 900; font-family: var(--font-mono); }
   .stat-card .lbl { font-size: 10px; color: var(--text-muted); margin-top: 6px; line-height: 1.2; }
-  .blue { color: var(--primary); } .green { color: var(--secondary); } .white { color: var(--text-main); }
+  .blue { color: var(--primary); } .green { color: var(--secondary); } .white { color: var(--text-main); } .warning { color: var(--warning); }
   
   .action-countdown-card { background: linear-gradient(135deg, var(--primary-rgba), transparent); border: 1px solid var(--primary); border-radius: 14px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
   .countdown-timer { font-family: var(--font-mono); font-size: 22px; font-weight: 900; color: var(--primary); }
@@ -167,16 +169,19 @@
   .notif-horario-row input { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 8px; border-radius: 8px; text-align: center; font-family: var(--font-mono); width: 85px; }
   .btn-notif { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; text-align: center; font-size: 12px; }
   .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+  
+  .banco-detalhe { font-size: 11px; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
+  .badge-extra { background: var(--warning); color: #000; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: bold; margin-left: 6px; }
 </style>
 </head>
 <body>
 
-<div id="ptr-indicator">&#x2728; Atualizando dados...</div>
+<div id="ptr-indicator">✨ Atualizando dados...</div>
 
 <div id="lock-screen" style="display:none;">
-  <div style="font-size:40px; margin-bottom:10px;">&#x1F512;</div>
+  <div style="font-size:40px; margin-bottom:10px;">🔒</div>
   <h2 style="font-size:18px;font-weight:bold;margin-bottom:4px;">Aplicativo Bloqueado</h2>
-  <p style="font-size:12px;color:var(--text-muted);">Insira seu PIN num�rico</p>
+  <p style="font-size:12px;color:var(--text-muted);">Insira seu PIN numérico</p>
   <div class="pin-dots" id="lock-dots">
     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
   </div>
@@ -184,14 +189,14 @@
     <button class="pin-btn" onclick="pressPin(1)">1</button><button class="pin-btn" onclick="pressPin(2)">2</button><button class="pin-btn" onclick="pressPin(3)">3</button>
     <button class="pin-btn" onclick="pressPin(4)">4</button><button class="pin-btn" onclick="pressPin(5)">5</button><button class="pin-btn" onclick="pressPin(6)">6</button>
     <button class="pin-btn" onclick="pressPin(7)">7</button><button class="pin-btn" onclick="pressPin(8)">8</button><button class="pin-btn" onclick="pressPin(9)">9</button>
-    <button class="pin-btn" style="background:transparent;border:none;font-size:13px;color:var(--text-muted);" onclick="clearPin()">Limpar</button><button class="pin-btn" onclick="pressPin(0)">0</button><button class="pin-btn" style="background:transparent;border:none;font-size:16px;color:var(--primary);" onclick="backspacePin()">&#x232B;</button>
+    <button class="pin-btn" style="background:transparent;border:none;font-size:13px;color:var(--text-muted);" onclick="clearPin()">Limpar</button><button class="pin-btn" onclick="pressPin(0)">0</button><button class="pin-btn" style="background:transparent;border:none;font-size:16px;color:var(--primary);" onclick="backspacePin()">⌫</button>
   </div>
 </div>
 
 <div id="config-pin-screen">
-  <div style="font-size:40px; margin-bottom:10px;">&#x2699;</div>
+  <div style="font-size:40px; margin-bottom:10px;">⚙️</div>
   <h2 id="config-pin-title" style="font-size:18px;font-weight:bold;margin-bottom:4px;">Configurar Novo PIN</h2>
-  <p style="font-size:12px;color:var(--text-muted);">Digite 4 d�gitos num�ricos</p>
+  <p style="font-size:12px;color:var(--text-muted);">Digite 4 dígitos numéricos</p>
   <div class="pin-dots" id="config-pin-dots">
     <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
   </div>
@@ -199,20 +204,20 @@
     <button class="pin-btn" onclick="pressConfigPin(1)">1</button><button class="pin-btn" onclick="pressConfigPin(2)">2</button><button class="pin-btn" onclick="pressConfigPin(3)">3</button>
     <button class="pin-btn" onclick="pressConfigPin(4)">4</button><button class="pin-btn" onclick="pressConfigPin(5)">5</button><button class="pin-btn" onclick="pressConfigPin(6)">6</button>
     <button class="pin-btn" onclick="pressConfigPin(7)">7</button><button class="pin-btn" onclick="pressConfigPin(8)">8</button><button class="pin-btn" onclick="pressConfigPin(9)">9</button>
-    <button class="pin-btn" style="background:transparent;border:none;font-size:13px;color:var(--text-muted);" onclick="cancelarConfigPIN()">Fechar</button><button class="pin-btn" onclick="pressConfigPin(0)">0</button><button class="pin-btn" style="background:transparent;border:none;font-size:16px;color:var(--primary);" onclick="backspaceConfigPin()">&#x232B;</button>
+    <button class="pin-btn" style="background:transparent;border:none;font-size:13px;color:var(--text-muted);" onclick="cancelarConfigPIN()">Fechar</button><button class="pin-btn" onclick="pressConfigPin(0)">0</button><button class="pin-btn" style="background:transparent;border:none;font-size:16px;color:var(--primary);" onclick="backspaceConfigPin()">⌫</button>
   </div>
 </div>
 
 <div id="app-content" style="display:none;">
 <header>
   <h1 id="main-title">Carregando...</h1>
-  <div class="today-badge" id="today-badge">�</div>
+  <div class="today-badge" id="today-badge">—</div>
 </header>
 <main>
   <div class="view active" id="view-hoje">
     <div class="action-countdown-card" id="countdown-card" style="display: none;">
       <div>
-        <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);" id="countdown-label">Pr�xima A��o</div>
+        <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);" id="countdown-label">Próxima Ação</div>
         <div style="font-size: 14px; font-weight: bold;" id="countdown-desc">Aguardando registro...</div>
       </div>
       <div class="countdown-timer" id="countdown-clock">00:00:00</div>
@@ -220,10 +225,10 @@
 
     <div class="stats">
       <div class="stat-card"><div class="val blue" id="stat-dias">0</div><div class="lbl">Dias<br>Trabalhados</div></div>
-      <div class="stat-card"><div class="val green" id="stat-folgas">0</div><div class="lbl">Folgas<br>no M�s</div></div>
+      <div class="stat-card"><div class="val green" id="stat-folgas">0</div><div class="lbl">Folgas<br>no Mês</div></div>
       <div class="stat-card">
         <div class="val white" id="stat-horas">0h</div>
-        <div class="lbl">Horas M�s<br><span id="stat-projecao" style="color:var(--text-muted);font-size:9px;">Proj: --</span></div>
+        <div class="lbl">Horas Mês<br><span id="stat-projecao" style="color:var(--text-muted);font-size:9px;">Proj: --</span></div>
       </div>
     </div>
 
@@ -231,10 +236,10 @@
     
     <div class="ponto-card">
       <div class="card-header-flex">
-        <h2>&#x23F1; Ponto de Hoje</h2>
+        <h2>⏱ Ponto de Hoje</h2>
         <div style="display:flex;gap:6px;">
-          <button class="btn-sm" style="background:var(--secondary-rgba);color:var(--secondary);border-color:rgba(56,217,169,0.2);" onclick="preencherDiaPadraoAutomatico()">&#x26A1; Auto</button>
-          <button class="btn-sm" onclick="abrirModalDia(todayKey)">&#x270F; Detalhes</button>
+          <button class="btn-sm" style="background:var(--secondary-rgba);color:var(--secondary);border-color:rgba(56,217,169,0.2);" onclick="preencherDiaPadraoAutomatico()">⚡ Auto</button>
+          <button class="btn-sm" onclick="abrirModalDia(todayKey)">✏ Detalhes</button>
         </div>
       </div>
       <div id="ponto-body"></div>
@@ -243,59 +248,63 @@
 
     <div class="card-padrao">
       <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); font-weight:bold; text-transform:uppercase;">
-        <span>&#x1F3AF; Meta do M�s Corrente</span>
+        <span>🎯 Meta do Mês Corrente</span>
         <span id="meta-porcentagem-texto" style="font-family:var(--font-mono); color:var(--text-main);">0%</span>
       </div>
       <div class="meta-progress-container">
         <div class="meta-progress-bar" id="meta-progress-bar"></div>
       </div>
-      <div style="font-size:11px; color:var(--text-muted); margin-top:6px;" id="meta-status-texto">0h de 0h necess�rias cumpridas</div>
+      <div style="font-size:11px; color:var(--text-muted); margin-top:6px;" id="meta-status-texto">0h de 0h necessárias cumpridas</div>
     </div>
     
     <div class="card-padrao" id="banco-horas-card">
-      <h2 style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">&#x1F4CA; Banco de Horas Acumulado</h2>
+      <h2 style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">📊 Banco de Horas Acumulado</h2>
       <div style="display:flex;justify-content:between;align-items:center; width:100%;">
         <div style="flex:1; display:flex; align-items:center; justify-content:space-between;">
           <span id="banco-horas-valor" style="font-size:26px;font-weight:900;color:var(--secondary);font-family:var(--font-mono);">0h 00m</span>
-          <div class="sparkline-box" id="sparkline-trend" title="Tend�ncia dos �ltimos 5 dias registrados"></div>
+          <div class="sparkline-box" id="sparkline-trend" title="Tendência dos últimos 5 dias registrados"></div>
         </div>
         <button class="btn-sm" style="margin-left:14px;" onclick="ajustarBancoHoras()">Ajustar</button>
       </div>
+      <div class="banco-detalhe" id="banco-horas-detalhe"></div>
     </div>
     
     <div class="card-padrao" id="resumo-card" style="display:none;">
       <h2 style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;">Resumo do Dia</h2>
-      <div class="horas-big" id="horas-big" style="font-size:36px;font-weight:900;color:var(--primary);font-family:var(--font-mono);">�</div>
+      <div class="horas-big" id="horas-big" style="font-size:36px;font-weight:900;color:var(--primary);font-family:var(--font-mono);">—</div>
       <div id="res-ef" style="margin-top:8px; font-size:14px; line-height:1.4;"></div>
     </div>
     
-    <div class="card-padrao"><h2>&#x1F4C8; Comparativo Semanal (Atual vs Anterior)</h2><div id="grafico-container"></div></div>
-    <div class="card-padrao"><div class="card-header-flex" style="margin-bottom:0;"><h2>&#x1F514; Lembretes Ativos</h2><span class="today-badge" style="background:var(--secondary);" id="notif-status-badge">ATIVO</span></div><div id="notif-container" style="margin-top:14px;"></div></div>
+    <div class="card-padrao"><h2>📈 Comparativo Semanal (Atual vs Anterior)</h2><div id="grafico-container"></div></div>
+    <div class="card-padrao"><div class="card-header-flex" style="margin-bottom:0;"><h2>🔔 Lembretes Ativos</h2><span class="today-badge" style="background:var(--secondary);" id="notif-status-badge">ATIVO</span></div><div id="notif-container" style="margin-top:14px;"></div></div>
   </div>
   
   <div class="view" id="view-folgas">
     <div class="card-padrao">
       <div class="nav-month-header">
-        <button class="btn-nav-month" onclick="mudarMesNavegacao(-1)">&#x25C0;</button>
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(-1)">◀</button>
         <h2 style="font-size:16px;"><span id="folgas-mes-nome"></span></h2>
-        <button class="btn-nav-month" onclick="mudarMesNavegacao(1)">&#x25B6;</button>
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(1)">▶</button>
       </div>
       <div style="background: var(--bg-input); padding: 12px; border-radius: 10px; margin-bottom: 14px; border:1px solid var(--border);">
-        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 6px;">&#x2699; Marcar Folgas em Lote</span>
+        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 6px;">⚙️ Marcar Folgas em Lote</span>
         <div style="display: flex; gap: 8px;">
           <select id="select-lote-dow" style="flex:1; padding:6px; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border); border-radius:6px; font-size:12px;">
             <option value="1">Todas as Segundas</option>
-            <option value="2">Todas as Ter�as</option>
+            <option value="2">Todas as Terças</option>
             <option value="3">Todas as Quartas</option>
             <option value="4">Todas as Quintas</option>
             <option value="5">Todas as Sextas</option>
-            <option value="6">Todos os S�bados</option>
+            <option value="6">Todos os Sábados</option>
             <option value="0">Todos os Domingos</option>
           </select>
           <button class="btn-sm" style="background: var(--primary); color:white; border:none;" onclick="aplicarFolgaLote(true)">Marcar</button>
           <button class="btn-sm" onclick="aplicarFolgaLote(false)">Limpar</button>
         </div>
       </div>
+      <button class="btn-block" onclick="aplicarHorarioPadraoMes()">
+        📅 Aplicar Horário Padrão a Todo o Mês
+      </button>
       <div class="month-grid" id="month-grid"></div>
     </div>
   </div>
@@ -303,9 +312,9 @@
   <div class="view" id="view-escala">
     <div class="card-padrao">
       <div class="nav-month-header">
-        <button class="btn-nav-month" onclick="mudarMesNavegacao(-1)">&#x25C0;</button>
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(-1)">◀</button>
         <h2 style="font-size:16px;"><span id="escala-mes-nome"></span></h2>
-        <button class="btn-nav-month" onclick="mudarMesNavegacao(1)">&#x25B6;</button>
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(1)">▶</button>
       </div>
       <div id="escala-list"></div>
     </div>
@@ -314,9 +323,9 @@
   <div class="view" id="view-historico">
     <div class="card-padrao">
       <div class="nav-month-header">
-        <button class="btn-nav-month" onclick="mudarMesNavegacao(-1)">&#x25C0;</button>
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(-1)">◀</button>
         <h2 style="font-size:16px;"><span id="hist-mes-nome"></span></h2>
-        <button class="btn-nav-month" onclick="mudarMesNavegacao(1)">&#x25B6;</button>
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(1)">▶</button>
       </div>
       <div id="hist-list"></div>
     </div>
@@ -324,66 +333,88 @@
 
   <div class="view" id="view-config">
     <div class="card-padrao">
-      <h2>&#x2699; Configura��es e Seguran�a</h2>
-      <p style="font-size:12px;color:var(--text-muted);margin:10px 0">Gerenciamento interno e customiza��o</p>
+      <h2>⚙️ Configurações e Segurança</h2>
+      <p style="font-size:12px;color:var(--text-muted);margin:10px 0">Gerenciamento interno e customização</p>
       
       <div class="config-section">
-        <h3>&#x1F3A8; Apar�ncia Visual</h3>
+        <h3>🎨 Aparência Visual</h3>
         <button class="btn-block" id="btn-toggle-theme" onclick="toggleTheme()">Alternar para Tema Claro</button>
       </div>
 
       <div class="config-section">
-        <h3>&#x1F512; Bloqueio por PIN</h3>
+        <h3>🔒 Bloqueio por PIN</h3>
         <button class="btn-block" id="btn-toggle-senha" onclick="abrirConfigPIN()">Ativar PIN do Aplicativo</button>
       </div>
 
       <div class="config-section">
-        <h3>&#x1F4BE; Backup & Relat�rios</h3>
+        <h3>💾 Backup & Relatórios</h3>
         <button class="btn-block" onclick="exportarBackupJSON()">Exportar Arquivo de Backup (JSON)</button>
         <button class="btn-block" onclick="document.getElementById('import-file').click()">Importar Arquivo de Backup (JSON)</button>
         <input type="file" id="import-file" style="display:none" onchange="importarBackupJSON(this)">
-        <button class="btn-block" onclick="exportarCSV()">Exportar Relat�rio Mensal (CSV)</button>
-        <button class="btn-block" onclick="exportarPDFHTML()">Imprimir / Exportar Relat�rio (PDF)</button>
+        <button class="btn-block" onclick="exportarCSV()">Exportar Relatório Mensal (CSV)</button>
+        <button class="btn-block" onclick="exportarCSVDetalhado()">📊 Exportar Relatório Avançado (com horas extras)</button>
+        <button class="btn-block" onclick="exportarPDFHTML()">Imprimir / Exportar Relatório (PDF)</button>
       </div>
       
       <div class="danger-zone">
         <h3 style="font-size:13px;color:var(--primary);margin-bottom:6px">Zona de Perigo</h3>
-        <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Isso apagar� permanentemente todos os seus dados locais.</p>
+        <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Isso apagará permanentemente todos os seus dados locais.</p>
         <button class="btn-danger" onclick="limparTodosDados()">Limpar Banco de Dados</button>
       </div>
     </div>
   </div>
 </main>
 
-<button class="fab-btn" id="fab-ponto-rapido" onclick="baterProximoPontoFAB()">&#x1F4CC;</button>
+<button class="fab-btn" id="fab-ponto-rapido" onclick="baterProximoPontoFAB()">📌</button>
 
 <nav>
-  <button class="nav-btn active" id="nav-hoje" onclick="switchView('hoje')"><span class="nav-icon">&#x23F0;</span>Hoje</button>
-  <button class="nav-btn" id="nav-folgas" onclick="switchView('folgas')"><span class="nav-icon">&#x1F4C5;</span>Folgas</button>
-  <button class="nav-btn" id="nav-escala" onclick="switchView('escala')"><span class="nav-icon">&#x1F5D3;</span>Escala</button>
-  <button class="nav-btn" id="nav-historico" onclick="switchView('historico')"><span class="nav-icon">&#x1F4DC;</span>Hist�rico</button>
-  <button class="nav-btn" id="nav-config" onclick="switchView('config')"><span class="nav-icon">&#x2699;</span>Config</button>
+  <button class="nav-btn active" id="nav-hoje" onclick="switchView('hoje')"><span class="nav-icon">⏰</span>Hoje</button>
+  <button class="nav-btn" id="nav-folgas" onclick="switchView('folgas')"><span class="nav-icon">📅</span>Folgas</button>
+  <button class="nav-btn" id="nav-escala" onclick="switchView('escala')"><span class="nav-icon">🗓</span>Escala</button>
+  <button class="nav-btn" id="nav-historico" onclick="switchView('historico')"><span class="nav-icon">📜</span>Histórico</button>
+  <button class="nav-btn" id="nav-config" onclick="switchView('config')"><span class="nav-icon">⚙️</span>Config</button>
 </nav>
 </div>
 
-<div class="modal-overlay" id="modal-dia"><div class="modal"><h3 id="mdtitle">Editar Dia</h3><p class="modal-sub" id="mdsub" style="font-size:12px;color:var(--text-muted);margin-bottom:14px;"></p><div id="md-pontos"><div class="mrow"><label>Entrada</label><input type="time" id="md-entrada"></div><div class="mrow"><label>Intervalo</label><input type="time" id="md-almoco-saida"></div><div class="mrow"><label>Retorno</label><input type="time" id="md-almoco-volta"></div><div class="mrow"><label>Sa�da</label><input type="time" id="md-saida"></div></div><div class="mactions"><button class="btn-cancel" onclick="fecharModal('modal-dia')">Cancelar</button><button class="btn-save" onclick="salvarDia()">Salvar</button></div></div></div>
-<div class="modal-overlay" id="modal-hora"><div class="modal"><h3 id="mhtitle">Editar Hor�rio</h3><br><div class="mrow"><label>Hor�rio</label><input type="time" id="mh-input"></div><div class="mactions"><button class="btn-cancel" onclick="fecharModal('modal-hora')">Cancelar</button><button class="btn-save" onclick="salvarHora()">Salvar</button></div></div></div>
+<div class="modal-overlay" id="modal-dia"><div class="modal"><h3 id="mdtitle">Editar Dia</h3><p class="modal-sub" id="mdsub" style="font-size:12px;color:var(--text-muted);margin-bottom:14px;"></p><div id="md-pontos"><div class="mrow"><label>Entrada</label><input type="time" id="md-entrada"></div><div class="mrow"><label>Intervalo</label><input type="time" id="md-almoco-saida"></div><div class="mrow"><label>Retorno</label><input type="time" id="md-almoco-volta"></div><div class="mrow"><label>Saída</label><input type="time" id="md-saida"></div></div><div class="mactions"><button class="btn-cancel" onclick="fecharModal('modal-dia')">Cancelar</button><button class="btn-save" onclick="salvarDia()">Salvar</button></div></div></div>
+<div class="modal-overlay" id="modal-hora"><div class="modal"><h3 id="mhtitle">Editar Horário</h3><br><div class="mrow"><label>Horário</label><input type="time" id="mh-input"></div><div class="mactions"><button class="btn-cancel" onclick="fecharModal('modal-hora')">Cancelar</button><button class="btn-save" onclick="salvarHora()">Salvar</button></div></div></div>
+<div class="modal-overlay" id="modal-banco"><div class="modal"><h3>Ajustar Banco de Horas</h3><div class="mrow"><label>Saldo atual (minutos)</label><input type="number" id="banco-ajuste" step="5" placeholder="Minutos"></div><div class="mactions"><button class="btn-cancel" onclick="fecharModal('modal-banco')">Cancelar</button><button class="btn-save" onclick="confirmarAjusteBanco()">Salvar</button></div></div></div>
 <div class="toast" id="toast"></div>
 
 <script>
-const DAYS_FULL=['Domingo','Segunda-feira','Ter�a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S�bado'],DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','S�b'],MONTHS=['Janeiro','Fevereiro','Mar�o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],KEY='escala_v4',DEFAULT={entrada:'14:00','almoco-saida':'16:00','almoco-volta':'17:00',saida:'22:20'},LABELS={entrada:'Entrada','almoco-saida':'Intervalo','almoco-volta':'Retorno',saida:'Sa�da'};
+const DAYS_FULL=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'],DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],KEY='escala_v4',DEFAULT={entrada:'14:00','almoco-saida':'16:00','almoco-volta':'17:00',saida:'22:20'},LABELS={entrada:'Entrada','almoco-saida':'Intervalo','almoco-volta':'Retorno',saida:'Saída'};
 
 let data=load(), now=new Date();
 let viewYear = now.getFullYear();
 let viewMonth = now.getMonth();
 let countdownInterval = null;
 let todayKey = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
+let pontosPendentesNotificados = {};
 
 function triggerHaptic() { try { if (navigator.vibrate) navigator.vibrate(35); } catch(e){} }
 function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(data)); backupIndexedDB();}catch(e){}}
 function dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function isDayOff(d){return!!(data[dk(d)]&&data[dk(d)].folga)}
+
+function getSemanaAno(date) {
+    let ano = date.getFullYear();
+    let primeiroDia = new Date(ano, 0, 1);
+    let dias = Math.floor((date - primeiroDia) / (24 * 60 * 60 * 1000));
+    return Math.ceil((dias + primeiroDia.getDay() + 1) / 7);
+}
+
+function calcularMinutosTrabalhados(rec) {
+    if(!rec.entrada || !rec.saida) return 0;
+    let a = rec.entrada.split(':'), b = rec.saida.split(':');
+    let mt = (parseInt(b[0]) - parseInt(a[0])) * 60 + (parseInt(b[1]) - parseInt(a[1]));
+    let mi = 0;
+    if (rec['almoco-saida'] && rec['almoco-volta']) {
+        let as = rec['almoco-saida'].split(':'), av = rec['almoco-volta'].split(':');
+        mi = (parseInt(av[0]) - parseInt(as[0])) * 60 + (parseInt(av[1]) - parseInt(as[1]));
+    }
+    return mt - mi;
+}
 
 const DB_NAME = 'EscalaEliezerDB', DB_VERSION = 1;
 function backupIndexedDB() {
@@ -410,8 +441,8 @@ function recuperarBackupAutomaticoIDB() {
             let tx = db.transaction('backups', 'readonly'), store = tx.objectStore('backups'), getReq = store.get('weekly_auto');
             getReq.onsuccess = function() {
                 if(getReq.result && Object.keys(data).length === 0) {
-                    if(confirm("Encontramos um backup interno autom�tico recente. Deseja restaurar?")) {
-                        data = getReq.result.dataset; save(); runApp(); showToast(" Restaurado do IndexedDB");
+                    if(confirm("Encontramos um backup interno automático recente. Deseja restaurar?")) {
+                        data = getReq.result.dataset; save(); runApp(); showToast("✅ Restaurado do IndexedDB");
                     }
                 }
             }
@@ -466,7 +497,7 @@ function pressPin(num) {
                 triggerHaptic();
                 document.getElementById('lock-dots').classList.add('err');
                 setTimeout(()=>document.getElementById('lock-dots').classList.remove('err'), 400);
-                showToast(" PIN Incorreto!"); clearPin(); 
+                showToast("❌ PIN Incorreto!"); clearPin(); 
             }
         }, 150);
     }
@@ -488,7 +519,7 @@ function abrirConfigPIN() {
     if(abrir) {
         if(confirm("Deseja remover o bloqueio por PIN?")) {
             try{ localStorage.removeItem('app_pin'); }catch(e){} 
-            showToast(" PIN removido"); atualizarBotaoSenhaVisual();
+            showToast("🔓 PIN removido"); atualizarBotaoSenhaVisual();
         }
     } else {
         configPinInput = ""; document.getElementById('config-pin-screen').style.display = 'flex'; updateConfigPinDots();
@@ -501,7 +532,7 @@ function pressConfigPin(num) {
     if(configPinInput.length === 4) {
         setTimeout(() => {
             try{ localStorage.setItem('app_pin', configPinInput); }catch(e){}
-            showToast(" PIN Ativado!");
+            showToast("🔒 PIN Ativado!");
             document.getElementById('config-pin-screen').style.display = 'none'; atualizarBotaoSenhaVisual();
         }, 150);
     }
@@ -528,9 +559,9 @@ function updateTitle() {
 function validarHorariosInconsistentes(rec) {
     if(!rec.entrada || !rec.saida) return false;
     let toMin = h => { let s=h.split(':'); return (parseInt(s[0])*60)+parseInt(s[1]); };
-    if(toMin(rec.saida) <= toMin(rec.entrada)) return "Erro: Sa�da n�o pode ser antes da Entrada.";
-    if(rec['almoco-saida'] && toMin(rec['almoco-saida']) <= toMin(rec.entrada)) return "Erro: Intervalo inv�lido.";
-    if(rec['almoco-volta'] && rec['almoco-saida'] && toMin(rec['almoco-volta']) <= toMin(rec['almoco-saida'])) return "Erro: Retorno inv�lido.";
+    if(toMin(rec.saida) <= toMin(rec.entrada)) return "Erro: Saída não pode ser antes da Entrada.";
+    if(rec['almoco-saida'] && toMin(rec['almoco-saida']) <= toMin(rec.entrada)) return "Erro: Intervalo inválido.";
+    if(rec['almoco-volta'] && rec['almoco-saida'] && toMin(rec['almoco-volta']) <= toMin(rec['almoco-saida'])) return "Erro: Retorno inválido.";
     return false;
 }
 
@@ -539,7 +570,7 @@ function runApp(){
     let badge = document.getElementById('today-badge');
     let isOff = isDayOff(now);
     if(badge) {
-        badge.textContent = isOff ? '\uFE0F Folga' : ' Escala';
+        badge.textContent = isOff ? '✅ Folga' : '📋 Escala';
         badge.className = isOff ? 'today-badge folga-badge' : 'today-badge';
     }
     
@@ -562,15 +593,15 @@ function baterProximoPontoFAB() {
     let tipos = ['entrada', 'almoco-saida', 'almoco-volta', 'saida'];
     let proximo = tipos.find(t => !rec[t]);
     
-    if(!proximo) { showToast(" Pontos de hoje completos!"); return; }
+    if(!proximo) { showToast("✅ Pontos de hoje completos!"); return; }
     let horariaAtual = new Date().toTimeString().slice(0,5);
     
     let clone = Object.assign({}, rec); clone[proximo] = horariaAtual;
     let erroStr = validarHorariosInconsistentes(clone);
-    if(erroStr) { alert(` Inconsist�ncia:\n${erroStr}`); return; }
+    if(erroStr) { alert(`⚠️ Inconsistência:\n${erroStr}`); return; }
 
     data[todayKey] = data[todayKey] || {}; data[todayKey][proximo] = horariaAtual;
-    save(); runApp(); showToast(` ${LABELS[proximo]} batido: ${horariaAtual}`);
+    save(); runApp(); showToast(`✅ ${LABELS[proximo]} batido: ${horariaAtual}`);
 }
 
 function renderWeek(){let g=document.getElementById('week-grid'),dow=now.getDay(),mon=new Date(now);if(!g)return;mon.setDate(now.getDate()-((dow===0?7:dow)-1));g.innerHTML='';for(let i=0;i<7;i++){let d=new Date(mon);d.setDate(mon.getDate()+i);let k=dk(d),isOff=isDayOff(d),isToday=k===todayKey,rec=data[k]||{},c=document.createElement('div');c.className='day-cell'+(isOff?' off-day':' work-day')+(isToday?' today-cell':'');c.innerHTML='<div class="dn">'+DAYS[d.getDay()]+'</div><div class="dd">'+d.getDate()+'</div>';c.onclick=()=>abrirModalDia(k);g.appendChild(c)}}
@@ -578,11 +609,11 @@ function renderWeek(){let g=document.getElementById('week-grid'),dow=now.getDay(
 function renderPonto(){
     let isOff=isDayOff(now),rec=data[todayKey]||{},b=document.getElementById('ponto-body');
     if(!b)return;
-    if(isOff){b.innerHTML='<div style="text-align:center;padding:24px;color:var(--text-muted);">\uFE0F Hoje � sua folga configurada!</div>';document.getElementById('resumo-card').style.display='none';document.getElementById('previsao-saida-box').style.display='none';return}
+    if(isOff){b.innerHTML='<div style="text-align:center;padding:24px;color:var(--text-muted);">✅ Hoje é sua folga configurada!</div>';document.getElementById('resumo-card').style.display='none';document.getElementById('previsao-saida-box').style.display='none';return}
     let tipos=['entrada','almoco-saida','almoco-volta','saida'],html='';
     tipos.forEach((t,i)=>{
         let val=rec[t],deps=[true,!!rec.entrada,!!rec['almoco-saida'],!!rec['almoco-volta']];
-        html+='<div class="ponto-row"><div><strong>'+LABELS[t]+'</strong><br><small style="color:var(--text-muted);font-family:var(--font-mono);">padr�o '+DEFAULT[t]+'</small></div><div style="display:flex;align-items:center;"><span style="margin-right:12px;font-weight:bold;font-family:var(--font-mono);font-size:15px;color:'+(val?'var(--text-main)':'var(--border)')+'">'+(val||'--:--')+'</span><button class="btn-edit" onclick="abrirModalHora(\''+t+'\')">&#x270F;&#xFE0F;</button>'+(val?'':'<button class="btn-reg" '+(deps[i]?'':'disabled')+' onclick="baterPonto(\''+t+'\')">&#x1F4CC;</button>')+'</div></div>';
+        html+='<div class="ponto-row"><div><strong>'+LABELS[t]+'</strong><br><small style="color:var(--text-muted);font-family:var(--font-mono);">padrão '+DEFAULT[t]+'</small></div><div style="display:flex;align-items:center;"><span style="margin-right:12px;font-weight:bold;font-family:var(--font-mono);font-size:15px;color:'+(val?'var(--text-main)':'var(--border)')+'">'+(val||'--:--')+'</span><button class="btn-edit" onclick="abrirModalHora(\''+t+'\')">✏️</button>'+(val?'':'<button class="btn-reg" '+(deps[i]?'':'disabled')+' onclick="baterPonto(\''+t+'\')">📌</button>')+'</div></div>';
     });
     b.innerHTML=html;
     
@@ -593,18 +624,17 @@ function renderPonto(){
         let saidaProjetadaMin = entMin + 440 + (almvMin - almsMin);
         let hProj = Math.floor(saidaProjetadaMin/60), mProj = saidaProjetadaMin%60;
         if(prevBox) {
-            prevBox.innerHTML = `\uFE0F <strong>Previs�o de Sa�da:</strong> Saia �s <strong>${String(hProj).padStart(2,'0')}:${String(mProj).padStart(2,'0')}</strong> (7h20m l�quidas).`;
+            prevBox.innerHTML = `⏰ <strong>Previsão de Saída:</strong> Saia às <strong>${String(hProj).padStart(2,'0')}:${String(mProj).padStart(2,'0')}</strong> (7h20m líquidas).`;
             prevBox.style.display = 'block';
         }
     } else { if(prevBox) prevBox.style.display = 'none'; }
 
     let rCard = document.getElementById('resumo-card');
     if(rec.entrada&&rec.saida){
-        let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1]));
+        let minutos = calcularMinutosTrabalhados(rec);
         if(rCard) rCard.style.display='block';
-        let hBig = document.getElementById('horas-big'); if(hBig) hBig.textContent=Math.floor(mt/60)+'h '+String(mt%60).padStart(2,'0')+'m';
-        let mi=0; if(rec['almoco-saida']&&rec['almoco-volta']){ let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':'); mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1])); }
-        let rEf = document.getElementById('res-ef'); if(rEf) rEf.innerHTML='<strong>Horas efetivas: '+Math.floor((mt-mi)/60)+'h '+String((mt-mi)%60).padStart(2,'0')+'m</strong>';
+        let hBig = document.getElementById('horas-big'); if(hBig) hBig.textContent=Math.floor(minutos/60)+'h '+String(minutos%60).padStart(2,'0')+'m';
+        let rEf = document.getElementById('res-ef'); if(rEf) rEf.innerHTML='<strong>Horas efetivas: '+Math.floor(minutos/60)+'h '+String(minutos%60).padStart(2,'0')+'m</strong>';
     }else{ if(rCard) rCard.style.display='none'; }
 }
 
@@ -621,11 +651,11 @@ function initCountdown() {
         let clock = document.getElementById('countdown-clock');
         
         let targetTimeStr = null;
-        if(!rec.entrada) { lbl.textContent = "Pr�xima A��o"; desc.textContent = "Entrada da Escala"; targetTimeStr = DEFAULT.entrada; }
-        else if(!rec['almoco-saida']) { lbl.textContent = "Per�odo p/ Intervalo"; desc.textContent = "Sa�da para Almo�o"; targetTimeStr = DEFAULT['almoco-saida']; }
-        else if(!rec['almoco-volta']) { lbl.textContent = "Retorno Intervalo"; desc.textContent = "Volta do Almo�o"; targetTimeStr = DEFAULT['almoco-volta']; }
+        if(!rec.entrada) { lbl.textContent = "Próxima Ação"; desc.textContent = "Entrada da Escala"; targetTimeStr = DEFAULT.entrada; }
+        else if(!rec['almoco-saida']) { lbl.textContent = "Período p/ Intervalo"; desc.textContent = "Saída para Almoço"; targetTimeStr = DEFAULT['almoco-saida']; }
+        else if(!rec['almoco-volta']) { lbl.textContent = "Retorno Intervalo"; desc.textContent = "Volta do Almoço"; targetTimeStr = DEFAULT['almoco-volta']; }
         else if(!rec.saida) {
-            lbl.textContent = "Fim do Expediente"; desc.textContent = "Sa�da Estimada";
+            lbl.textContent = "Fim do Expediente"; desc.textContent = "Saída Estimada";
             if(rec.entrada && rec['almoco-saida'] && rec['almoco-volta']) {
                 let ent=rec.entrada.split(':'), as=rec['almoco-saida'].split(':'), av=rec['almoco-volta'].split(':');
                 let calc = (parseInt(ent[0])*60)+parseInt(ent[1]) + 440 + ((parseInt(av[0])*60)+parseInt(av[1]) - ((parseInt(as[0])*60)+parseInt(as[1])));
@@ -638,7 +668,7 @@ function initCountdown() {
         
         let dTarget = new Date(); dTarget.setHours(targetTimeStr.split(':')[0], targetTimeStr.split(':')[1], 0);
         let diffMs = dTarget - new Date();
-        if(diffMs < 0) { clock.textContent = "00:00:00"; desc.textContent = "Hor�rio atingido!"; return; }
+        if(diffMs < 0) { clock.textContent = "00:00:00"; desc.textContent = "Horário atingido!"; return; }
         
         let h = Math.floor(diffMs/3600000), m = Math.floor((diffMs%3600000)/60000), s = Math.floor((diffMs%60000)/1000);
         clock.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
@@ -649,13 +679,13 @@ function initCountdown() {
 function preencherDiaPadraoAutomatico() {
     if(isDayOff(now)) return;
     triggerHaptic();
-    if(confirm("Preencher hoje com o hor�rio padr�o?")) {
+    if(confirm("Preencher hoje com o horário padrão?")) {
         data[todayKey] = { entrada: DEFAULT.entrada, 'almoco-saida': DEFAULT['almoco-saida'], 'almoco-volta': DEFAULT['almoco-volta'], saida: DEFAULT.saida };
-        save(); runApp(); showToast(" Inserido!");
+        save(); runApp(); showToast("✅ Inserido!");
     }
 }
 
-function baterPonto(t){ triggerHaptic(); let h=new Date().toTimeString().slice(0,5); data[todayKey]=data[todayKey]||{}; data[todayKey][t]=h; save(); runApp(); showToast(' Registrado!')}
+function baterPonto(t){ triggerHaptic(); let h=new Date().toTimeString().slice(0,5); data[todayKey]=data[todayKey]||{}; data[todayKey][t]=h; save(); runApp(); showToast('✅ Registrado!')}
 let _ht=null;
 function abrirModalHora(t){_ht=t;let val=(data[todayKey]||{})[t]||DEFAULT[t];document.getElementById('mhtitle').textContent='Editar - '+LABELS[t];document.getElementById('mh-input').value=val;abrirModal('modal-hora')}
 function salvarHora(){
@@ -663,7 +693,7 @@ function salvarHora(){
     let clone = Object.assign({}, data[todayKey]||{}); clone[_ht] = v;
     let err = validarHorariosInconsistentes(clone);
     if(err) { alert(err); return; }
-    data[todayKey]=data[todayKey]||{}; data[todayKey][_ht]=v; save(); fecharModal('modal-hora'); runApp(); showToast(' Salvo!');
+    data[todayKey]=data[todayKey]||{}; data[todayKey][_ht]=v; save(); fecharModal('modal-hora'); runApp(); showToast('✅ Salvo!');
 }
 
 let _ek=null;
@@ -673,7 +703,7 @@ function salvarDia(){
     let obj = { entrada: e, 'almoco-saida': as, 'almoco-volta': av, saida: s };
     let err = validarHorariosInconsistentes(obj); if(err) { alert(err); return; }
     data[_ek]=obj; delete data[_ek].folga; if(!e&&!as&&!av&&!s) delete data[_ek];
-    save(); fecharModal('modal-dia'); runApp(); showToast(' Atualizado!')
+    save(); fecharModal('modal-dia'); runApp(); showToast('✅ Atualizado!')
 }
 
 function mudarMesNavegacao(dir) {
@@ -696,7 +726,35 @@ function aplicarFolgaLote(marcar) {
             else { if(data[k] && data[k].folga) { delete data[k]; cont++; } }
         }
     }
-    save(); renderFolgas(); runApp(); showToast(` Alterado!`);
+    save(); renderFolgas(); runApp(); showToast(`✅ Alterado!`);
+}
+
+function aplicarHorarioPadraoMes() {
+    if (!confirm(`Aplicar horário padrão (${DEFAULT.entrada} às ${DEFAULT.saida}) a todos os dias úteis de ${MONTHS[viewMonth]}?`)) return;
+    
+    let total = new Date(viewYear, viewMonth + 1, 0).getDate();
+    let alterados = 0;
+    
+    for (let d = 1; d <= total; d++) {
+        let date = new Date(viewYear, viewMonth, d);
+        let k = dk(date);
+        
+        if (data[k] && (data[k].folga || data[k].entrada)) continue;
+        
+        if (!isDayOff(date)) {
+            data[k] = {
+                entrada: DEFAULT.entrada,
+                'almoco-saida': DEFAULT['almoco-saida'],
+                'almoco-volta': DEFAULT['almoco-volta'],
+                saida: DEFAULT.saida
+            };
+            alterados++;
+        }
+    }
+    
+    save();
+    runApp();
+    showToast(`✅ ${alterados} dias preenchidos!`);
 }
 
 function renderFolgas(){
@@ -721,9 +779,9 @@ function renderStats(){
         if(rec.folga){folgas++;continue}
         totalDiasUteisEscala++;
         if(rec.entrada&&rec.saida){
-            dias++; let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;
-            if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}
-            min+=mt-mi;
+            dias++; 
+            let minutosTrab = calcularMinutosTrabalhados(rec);
+            min+=minutosTrab;
         } else if (date > now) { diasEscaladosRestantes++; }
     }
     let sd = document.getElementById('stat-dias'); if(sd) sd.textContent=dias;
@@ -738,10 +796,83 @@ function renderStats(){
     
     let mpb = document.getElementById('meta-progress-bar'); if(mpb) mpb.style.width = metaPorcentagem + '%';
     let mpt = document.getElementById('meta-porcentagem-texto'); if(mpt) mpt.textContent = metaPorcentagem + '%';
-    let mst = document.getElementById('meta-status-texto'); if(mst) mst.textContent = `${horasReais}h cumpridas de ${Math.floor(metaMensalHorasMinutos/60)}h no m�s`;
+    let mst = document.getElementById('meta-status-texto'); if(mst) mst.textContent = `${horasReais}h cumpridas de ${Math.floor(metaMensalHorasMinutos/60)}h no mês`;
 
     renderGrafico();
     renderTendenciaSparkline();
+}
+
+function renderBancoHoras(){
+    let baseMin = 0; try{ baseMin = parseInt(localStorage.getItem('banco_horas_base'))||0; }catch(e){}
+    
+    let y=now.getFullYear(),m=now.getMonth(),total=new Date(y,m+1,0).getDate();
+    let semanas = {};
+    let limiteSemanal = 44 * 60;
+    let horasNormais = 0;
+    let horasExtras = 0;
+    
+    for(let d=1;d<=total;d++){
+        let date=new Date(y,m,d);
+        let semana = getSemanaAno(date);
+        if (!semanas[semana]) semanas[semana] = 0;
+        
+        let k=dk(date), rec=data[k]||{};
+        if(!rec.folga && rec.entrada && rec.saida){
+            let minutosTrab = calcularMinutosTrabalhados(rec);
+            semanas[semana] += minutosTrab;
+        }
+    }
+    
+    for (let sem in semanas) {
+        if (semanas[sem] > limiteSemanal) {
+            horasExtras += semanas[sem] - limiteSemanal;
+            horasNormais += limiteSemanal;
+        } else {
+            horasNormais += semanas[sem];
+        }
+    }
+    
+    let totalEsperado = 0;
+    for(let d=1;d<=total;d++){
+        let date=new Date(y,m,d);
+        let rec=data[dk(date)]||{};
+        if(!rec.folga && !rec.entrada && date <= now) totalEsperado += 440;
+        else if(!rec.folga && rec.entrada) totalEsperado += 440;
+    }
+    
+    let saldoFinal = baseMin + (horasExtras - (horasNormais - totalEsperado));
+    
+    let bhv = document.getElementById('banco-horas-valor');
+    if(bhv){
+        bhv.textContent=(saldoFinal>=0?'+':'')+Math.floor(Math.abs(saldoFinal)/60)+'h '+String(Math.abs(saldoFinal)%60).padStart(2,'0')+'m';
+        bhv.style.color=saldoFinal>=0?'var(--secondary)':'var(--primary)';
+    }
+    
+    let detalhe = document.getElementById('banco-horas-detalhe');
+    if(detalhe){
+        if(horasExtras > 0){
+            detalhe.innerHTML = `<span>🕐 Horas extras no mês: +${Math.floor(horasExtras/60)}h${horasExtras%60}min</span>
+                                 <span class="badge-extra">Extra!</span>`;
+        } else {
+            detalhe.innerHTML = `<span>📊 Horas normais: ${Math.floor(horasNormais/60)}h | Ajuste base: ${Math.floor(baseMin/60)}h</span>`;
+        }
+    }
+}
+
+function ajustarBancoHoras() {
+    let atual = localStorage.getItem('banco_horas_base') || 0;
+    document.getElementById('banco-ajuste').value = atual;
+    abrirModal('modal-banco');
+}
+
+function confirmarAjusteBanco() {
+    let novo = parseInt(document.getElementById('banco-ajuste').value);
+    if (!isNaN(novo)) {
+        localStorage.setItem('banco_horas_base', novo);
+        fecharModal('modal-banco');
+        runApp();
+        showToast("✅ Banco ajustado!");
+    }
 }
 
 function renderTendenciaSparkline() {
@@ -753,49 +884,65 @@ function renderTendenciaSparkline() {
         let rec = data[dk(d)]; if(rec && !rec.folga && rec.entrada && rec.saida) ultimosDias.push(rec);
     }
     ultimosDias.slice(-5).forEach(rec => {
-        let ent=rec.entrada.split(':'), sai=rec.saida.split(':'), mt=(parseInt(sai[0])-parseInt(ent[0]))*60+(parseInt(sai[1])-parseInt(ent[1])), mi=0;
-        if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}
-        let saldo = (mt - mi) - 440;
+        let saldo = calcularMinutosTrabalhados(rec) - 440;
         let bar = document.createElement('div'); bar.className = 'spark-bar ' + (saldo >= 0 ? 'up' : 'down');
         bar.style.height = Math.min(Math.max(Math.abs(saldo) / 4, 6), 24) + 'px';
         sparkBox.appendChild(bar);
     });
 }
 
-function renderBancoHoras(){
-    let baseMin = 0; try{ baseMin = parseInt(localStorage.getItem('banco_horas_base'))||0; }catch(e){}
-    let y=now.getFullYear(),m=now.getMonth(),total=new Date(y,m+1,0).getDate();
-    for(let d=1;d<=total;d++){
-        let date=new Date(y,m,d),k=dk(date),rec=data[k]||{};
-        if(!rec.folga&&rec.entrada&&rec.saida){
-            let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;
-            if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}
-            baseMin+= (mt-mi)-440;
+function exportarBackupJSON(){let dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(data)),dlAnchor=document.createElement('a');dlAnchor.setAttribute("href",dataStr);dlAnchor.setAttribute("download","backup_escala.json");document.body.appendChild(dlAnchor);dlAnchor.click();dlAnchor.remove();showToast("✅ Backup exportado!");}
+function importarBackupJSON(input){let file=input.files[0];if(!file)return;let reader=new FileReader();reader.onload=function(e){try{let parsed=JSON.parse(e.target.result);if(typeof parsed==='object'){data=parsed;save();runApp();showToast("✅ Restaurado!");}}catch(err){alert("Inválido");}};reader.readAsText(file);}
+function exportarCSV(){let csv="Data,Entrada,Intervalo Saída,Intervalo Retorno,Saída,Folga\n",y=now.getFullYear(),m=now.getMonth(),total=new Date(y,m+1,0).getDate();for(let d=1;d<=total;d++){let date=new Date(y,m,d),k=dk(date),rec=data[k]||{};csv+=`${k},${rec.entrada||''},${rec['almoco-saida']||''},${rec['almoco-volta']||''},${rec.saida||''},${rec.folga?'Sim':'Não'}\n`;}let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`escala_${m+1}.csv`;a.click();}
+
+function exportarCSVDetalhado() {
+    let csv = "Semana,Dia,Data,Entrada,Saída,Horas Líquidas,Acumulado Semana,Saldo Semanal(44h)\n";
+    let y = now.getFullYear(), m = now.getMonth();
+    let total = new Date(y, m + 1, 0).getDate();
+    let acumuladoSemana = 0;
+    let semanaAtual = 1;
+    
+    for (let d = 1; d <= total; d++) {
+        let date = new Date(y, m, d);
+        let k = dk(date);
+        let rec = data[k] || {};
+        
+        if (date.getDay() === 1 && d > 1) {
+            let saldo = acumuladoSemana - (44 * 60);
+            csv += `,,,,,,,${Math.floor(saldo/60)}h${Math.abs(saldo)%60}min\n`;
+            acumuladoSemana = 0;
+            semanaAtual++;
+        }
+        
+        if (!rec.folga && rec.entrada && rec.saida) {
+            let minutos = calcularMinutosTrabalhados(rec);
+            acumuladoSemana += minutos;
+            csv += `${semanaAtual},${DAYS[date.getDay()]},${k},${rec.entrada},${rec.saida},${Math.floor(minutos/60)}h,${Math.floor(acumuladoSemana/60)}h,\n`;
+        } else if (rec.folga) {
+            csv += `${semanaAtual},${DAYS[date.getDay()]},${k},FOLGA,FOLGA,0h,${Math.floor(acumuladoSemana/60)}h,\n`;
         }
     }
-    let bhv = document.getElementById('banco-horas-valor');
-    if(bhv){
-        bhv.textContent=(baseMin>=0?'+':'')+Math.floor(Math.abs(baseMin)/60)+'h '+String(Math.abs(baseMin)%60).padStart(2,'0')+'m';
-        bhv.style.color=baseMin>=0?'var(--secondary)':'var(--primary)';
-    }
-}
-function ajustarBancoHoras(){
-    let abrir=0; try{abrir=parseInt(localStorage.getItem('banco_horas_base'))||0;}catch(e){}
-    let novo=prompt("Ajustar saldo base inicial (em minutos):",abrir);
-    if(novo!==null){ try{localStorage.setItem('banco_horas_base',parseInt(novo)||0);}catch(e){} runApp(); }
+    
+    let blob = new Blob([csv], {type: 'text/csv;charset=utf-8;'});
+    let url = URL.createObjectURL(blob);
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = `relatorio_detalhado_${m+1}_${y}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
 }
 
-function exportarBackupJSON(){let dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(data)),dlAnchor=document.createElement('a');dlAnchor.setAttribute("href",dataStr);dlAnchor.setAttribute("download","backup_escala.json");document.body.appendChild(dlAnchor);dlAnchor.click();dlAnchor.remove();showToast(" Backup exportado!");}
-function importarBackupJSON(input){let file=input.files[0];if(!file)return;let reader=new FileReader();reader.onload=function(e){try{let parsed=JSON.parse(e.target.result);if(typeof parsed==='object'){data=parsed;save();runApp();showToast(" Restaurado!");}}catch(err){alert("Inv�lido");}};reader.readAsText(file);}
-function exportarCSV(){let csv="Data,Entrada,Intervalo Sa�da,Intervalo Retorno,Sa�da,Folga\n",y=now.getFullYear(),m=now.getMonth(),total=new Date(y,m+1,0).getDate();for(let d=1;d<=total;d++){let date=new Date(y,m,d),k=dk(date),rec=data[k]||{};csv+=`${k},${rec.entrada||''},${rec['almoco-saida']||''},${rec['almoco-volta']||''},${rec.saida||''},${rec.folga?'Sim':'N�o'}\n`;}let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`escala_${m+1}.csv`;a.click();}
-function exportarPDFHTML(){let y=now.getFullYear(),m=now.getMonth(),total=new Date(y,m+1,0).getDate(),w=window.open();w.document.write(`<h2>Relat�rio Mensal</h2><table border="1" cellpadding="5" style="border-collapse:collapse;width:100%;">`);for(let d=1;d<=total;d++){let date=new Date(y,m,d),k=dk(date),rec=data[k]||{};w.document.write(`<tr><td>${d}/${m+1}</td><td>${rec.entrada||'--'}</td><td>${rec.saida||'--'}</td><td>${rec.folga?'Folga':'Escala'}</td></tr>`);}w.document.write(`</table>`);w.document.close();w.print();}
+function exportarPDFHTML(){let y=now.getFullYear(),m=now.getMonth(),total=new Date(y,m+1,0).getDate(),w=window.open();w.document.write(`<h2>Relatório Mensal</h2><table border="1" cellpadding="5" style="border-collapse:collapse;width:100%;">`);for(let d=1;d<=total;d++){let date=new Date(y,m,d),k=dk(date),rec=data[k]||{};w.document.write(`</tr><td>${d}/${m+1}</td><td>${rec.entrada||'--'}</td><td>${rec.saida||'--'}</td><td>${rec.folga?'Folga':'Escala'}</td>`);}w.document.write(`</table>`);w.document.close();w.print();}
 
 function renderHistorico(){
     let list=document.getElementById('hist-list'),html='',totalDays=new Date(viewYear,viewMonth+1,0).getDate(); if(!list)return;
     let nm = document.getElementById('hist-mes-nome'); if(nm) nm.textContent=MONTHS[viewMonth] + ' ' + viewYear;
     for(let d=totalDays;d>=1;d--){
-        let date=new Date(viewYear,viewMonth,d),k=dk(date),rec=data[k]||{},isOff=!!rec.folga,horas='�';
-        if(isOff){horas='\uFE0F'}else if(rec.entrada&&rec.saida){let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}horas=Math.floor((mt-mi)/60)+'h'}
+        let date=new Date(viewYear,viewMonth,d),k=dk(date),rec=data[k]||{},isOff=!!rec.folga,horas='—';
+        if(isOff){horas='✅'}else if(rec.entrada&&rec.saida){
+            let minutos = calcularMinutosTrabalhados(rec);
+            horas=Math.floor(minutos/60)+'h'
+        }
         html+='<div class="hist-item" onclick="abrirModalDia(\''+k+'\')"><div><strong>'+d+' de '+MONTHS[viewMonth].slice(0,3)+'</strong><br><small style="color:var(--text-muted)">'+DAYS[date.getDay()]+'</small></div><div><span style="font-family:var(--font-mono);font-weight:bold;">'+horas+'</span></div></div>'
     }
     list.innerHTML=html;
@@ -809,12 +956,18 @@ function renderEscala(){
     semanas.forEach((sem,idx)=>{
         let block=document.createElement('div'); block.innerHTML='<div style="font-size:10px;color:var(--text-muted);margin:12px 0 6px;text-transform:uppercase;font-weight:bold;">Semana '+(idx+1)+'</div>';
         sem.forEach(date=>{
-            let k=dk(date),rec=data[k]||{},isOff=!!rec.folga,isFuture=date>now,isToday=k===todayKey,cls='escala-day',numColor='muted',status='',horas='�',horarios='';
+            let k=dk(date),rec=data[k]||{},isOff=!!rec.folga,isFuture=date>now,isToday=k===todayKey,cls='escala-day',numColor='muted',status='',horas='—',horarios='';
             
-            if(isOff){cls+=' is-folga';numColor='green';status='\uFE0F Folga'}
-            else if(rec.entrada&&rec.saida){cls+=' is-trabalhou';numColor='blue';let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}horas=Math.floor((mt-mi)/60)+'h';status=' Trabalhou';horarios=rec.entrada+' - '+rec.saida}
-            else if(!isFuture){cls+=' is-pendente';status=' Pendente';horarios=DEFAULT.entrada+' - '+DEFAULT.saida}
-            else{status=' Trabalho';horarios=DEFAULT.entrada+' - '+DEFAULT.saida;horas='7h20'}
+            if(isOff){cls+=' is-folga';numColor='green';status='✅ Folga'}
+            else if(rec.entrada&&rec.saida){
+                cls+=' is-trabalhou';numColor='blue';
+                let minutos = calcularMinutosTrabalhados(rec);
+                horas=Math.floor(minutos/60)+'h';
+                status='✅ Trabalhou';
+                horarios=rec.entrada+' - '+rec.saida
+            }
+            else if(!isFuture){cls+=' is-pendente';status='⏳ Pendente';horarios=DEFAULT.entrada+' - '+DEFAULT.saida}
+            else{status='📋 Trabalho';horarios=DEFAULT.entrada+' - '+DEFAULT.saida;horas='7h20'}
             
             if(isToday)cls+=' is-today';
             let dayEl=document.createElement('div'); dayEl.className=cls;
@@ -833,9 +986,7 @@ function renderGrafico(){
         let totalMin=0; sem.forEach(date=>{
             if(date>now)return; let k=dk(date),rec=data[k]||{}; if(rec.folga)return;
             if(rec.entrada&&rec.saida){
-                let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;
-                if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}
-                totalMin+=mt-mi;
+                totalMin += calcularMinutosTrabalhados(rec);
             }
         }); return totalMin;
     });
@@ -862,8 +1013,8 @@ function switchView(v){
 function limparTodosDados(){
     try {
         let pinSalvo = localStorage.getItem('app_pin');
-        if(pinSalvo && prompt(" Insira seu PIN:") !== pinSalvo) return;
-        localStorage.clear(); data={}; runApp(); switchView('hoje'); showToast(' Limpo!');
+        if(pinSalvo && prompt("⚠️ Insira seu PIN:") !== pinSalvo) return;
+        localStorage.clear(); data={}; runApp(); switchView('hoje'); showToast('✅ Limpo!');
     } catch(e){}
 }
 function showToast(m){let t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
@@ -874,7 +1025,7 @@ async function solicitarPermissaoNotificacao(){
     try {
         if(!('Notification'in window)) return false;
         let r = await Notification.requestPermission();
-        if(r==='granted'){ showToast(' Ativo!'); renderNotificacoes(); startNotificationEngine(); return true; }
+        if(r==='granted'){ showToast('🔔 Ativo!'); renderNotificacoes(); startNotificationEngine(); return true; }
     } catch(e){}
     return false;
 }
@@ -882,28 +1033,54 @@ function renderNotificacoes(){
     let container=document.getElementById('notif-container');if(!container)return;
     let config=loadNotifConfig(),hasPermission=false;
     try{hasPermission=Notification.permission==='granted';}catch(e){}
-    let badge=document.getElementById('notif-status-badge');if(badge)badge.textContent=hasPermission?' ATIVO':' INATIVO';
-    let rotulos=['Antecipar Entrada','Antecipar Intervalo','Antecipar Retorno','Antecipar Sa�da'],html='<div class="notif-horarios">';
+    let badge=document.getElementById('notif-status-badge');if(badge)badge.textContent=hasPermission?'🔔 ATIVO':'🔕 INATIVO';
+    let rotulos=['Antecipar Entrada','Antecipar Intervalo','Antecipar Retorno','Antecipar Saída'],html='<div class="notif-horarios">';
     rotulos.forEach((l,i)=>{ html+='<div class="notif-horario-row"><label>'+l+'</label><input type="time" id="notif-time-'+i+'" value="'+(config.horarios[i]||'14:00')+'"></div>'; });
-    html+='</div><div style="display:flex;gap:8px;margin-top:12px;"><button class="btn-notif" onclick="solicitarPermissaoNotificacao()">Permiss�o</button><button class="btn-notif" style="background:var(--primary);color:#fff;border:none;" onclick="salvarHorariosNotificacao()"> Salvar</button></div>';
+    html+='</div><div style="display:flex;gap:8px;margin-top:12px;"><button class="btn-notif" onclick="solicitarPermissaoNotificacao()">Permissão</button><button class="btn-notif" style="background:var(--primary);color:#fff;border:none;" onclick="salvarHorariosNotificacao()">💾 Salvar</button></div>';
     container.innerHTML=html;
 }
 function salvarHorariosNotificacao(){
     let novos=[]; for(let i=0;i<4;i++){let inp=document.getElementById('notif-time-'+i);if(inp)novos.push(inp.value)}
     let c=loadNotifConfig(); c.horarios=novos; try{localStorage.setItem(NOTIF_KEY,JSON.stringify(c));}catch(e){}
-    showToast(' Salvo!'); startNotificationEngine();
+    showToast('✅ Salvo!'); startNotificationEngine();
 }
+
 function startNotificationEngine() {
     try {
         if(notificationTimer) clearInterval(notificationTimer);
         if(!('Notification' in window) || Notification.permission !== 'granted' || isDayOff(now)) return;
+        
         notificationTimer = setInterval(() => {
-            let agoraString = new Date().toTimeString().slice(0,5), config = loadNotifConfig(), idx = config.horarios.indexOf(agoraString);
-            if(idx !== -1) {
-                let acoes = ['Bater Entrada', 'Bater Intervalo', 'Retornar do Intervalo', 'Bater Sa�da'];
-                new Notification(" Lembrete de Ponto", { body: `A��o necess�ria: ${acoes[idx]} (${agoraString})` });
-            }
-        }, 60000);
+            let agora = new Date();
+            let agoraStr = agora.toTimeString().slice(0,5);
+            let rec = data[todayKey] || {};
+            
+            let pontos = ['entrada', 'almoco-saida', 'almoco-volta', 'saida'];
+            let acoes = ['Bater Entrada', 'Bater Intervalo', 'Retornar', 'Bater Saída'];
+            let horariosConfig = loadNotifConfig().horarios;
+            
+            pontos.forEach((ponto, idx) => {
+                if (!rec[ponto] && agoraStr === horariosConfig[idx]) {
+                    let chave = `${todayKey}_${ponto}`;
+                    if (!pontosPendentesNotificados[chave]) {
+                        new Notification("⏰ Lembrete de Ponto", {
+                            body: `${acoes[idx]} agora (${agoraStr})`,
+                        });
+                        pontosPendentesNotificados[chave] = true;
+                        
+                        setTimeout(() => {
+                            if (!data[todayKey] || !data[todayKey][ponto]) {
+                                new Notification("⚠️ Atraso no ponto!", {
+                                    body: `${acoes[idx]} ainda não foi registrado!`
+                                });
+                            }
+                        }, 5 * 60 * 1000);
+                    }
+                }
+            });
+            
+            if (new Date().getHours() === 0) pontosPendentesNotificados = {};
+        }, 30000);
     } catch(e){}
 }
 
