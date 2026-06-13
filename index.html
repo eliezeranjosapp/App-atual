@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    
+    <!-- Link para o Manifesto PWA -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#161923">
+    
+    <!-- Suporte para iOS (Safari) -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Escala Eliezer">
+    
+    <title>Escala Eliezer - Ultra Premium</title>
+
+    <style>
+        :root {
+            --bg-principal: #0f111a;
+            --bg-card: #161925;
+            --cor-borda: #23283b;
+            --texto-principal: #ffffff;
+            --texto-secundario: #94a3b8;
+            --primaria-azul: #3b82f6;
+            --primaria-hover: #2563eb;
+            --cor-ouro: #fbbf24;
+            --cor-ouro-hover: #f59e0b;
+            --sucesso: #10b981;
+            --perigo: #ef4444;
+            --fonte-familia: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--texto-principal);
+            font-family: var(--fonte-familia);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: var(--bg-card);
+            border: 1px solid var(--cor-borda);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            margin-top: 10px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .sub-header {
+            font-size: 14px;
+            color: var(--texto-secundario);
+        }
+
+        .seletor-container {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--texto-secundario);
+            margin-bottom: 8px;
+        }
+
+        select {
+            width: 100%;
+            padding: 16px;
+            background: var(--bg-principal);
+            border: 1px solid var(--cor-borda);
+            border-radius: 14px;
+            color: var(--texto-principal);
+            font-size: 16px;
+            font-family: var(--fonte-familia);
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.2s ease;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            background-size: 18px;
+        }
+
+        select:focus {
+            border-color: var(--primaria-azul);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .grid-botoes {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-principal {
+            background: var(--primaria-azul);
+            color: white;
+            grid-column: span 2;
+        }
+
+        .btn-principal:active {
+            background: var(--primaria-hover);
+            transform: scale(0.98);
+        }
+
+        .btn-ouro {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.2);
+            color: var(--cor-ouro);
+        }
+
+        .btn-ouro:active {
+            background: rgba(251, 191, 36, 0.2);
+            transform: scale(0.97);
+        }
+
+        .btn-perigo {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--perigo);
+        }
+
+        .btn-perigo:active {
+            background: rgba(239, 68, 68, 0.2);
+            transform: scale(0.97);
+        }
+
+        .card-resultado {
+            background: var(--bg-principal);
+            border: 1px solid var(--cor-borda);
+            border-radius: 16px;
+            padding: 20px;
+            margin-top: 8px;
+            display: none;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .resultado-linha {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(35, 40, 59, 0.5);
+        }
+
+        .resultado-linha:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .resultado-linha:first-child {
+            padding-top: 0;
+        }
+
+        .resultado-label {
+            font-size: 13px;
+            color: var(--texto-secundario);
+            font-weight: 500;
+        }
+
+        .resultado-valor {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--texto-principal);
+        }
+
+        .badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .badge-trabalho {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--sucesso);
+        }
+
+        .badge-folga {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--perigo);
+        }
+
+        .badge-ouro {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--cor-ouro);
+        }
+
+        .notificacao {
+            position: fixed;
+            bottom: 24px;
+            background: #2563eb;
+            color: white;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+            display: none;
+            animation: subir 0.3s ease forwards;
+            z-index: 1000;
+        }
+
+        @keyframes subir {
+            from { transform: translateY(100px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Escala Eliezer</h1>
+            <div class="sub-header">Premium Shift Management</div>
+        </header>
+
+        <div class="seletor-container">
+            <label for="mes">Mês de Referência</label>
+            <select id="mes">
+                <option value="0">Janeiro 2026</option>
+                <option value="1">Fevereiro 2026</option>
+                <option value="2">Março 2026</option>
+                <option value="3">Abril 2026</option>
+                <option value="4">Maio 2026</option>
+                <option value="5" selected>Junho 2026</option>
+                <option value="6">Julho 2026</option>
+                <option value="7">Agosto 2026</option>
+                <option value="8">Setembro 2026</option>
+                <option value="9">Outubro 2026</option>
+                <option value="10">Novembro 2026</option>
+                <option value="11">Dezembro 2026</option>
+            </select>
+        </div>
+
+        <div class="seletor-container">
+            <label for="dia">Dia do Mês</label>
+            <select id="dia"></select>
+        </div>
+
+        <div class="grid-botoes">
+            <button class="btn btn-principal" onclick="calcularEscala()">
+                Calcular Status
+            </button>
+            <button class="btn btn-ouro" onclick="verProximaFolga()">
+                Próxima Folga
+            </button>
+            <button class="btn btn-perigo" onclick="limparPainel()">
+                Limpar
+            </button>
+        </div>
+
+        <div class="card-resultado" id="resultadoCard">
+            <div class="resultado-linha">
+                <span class="resultado-label">Data Selecionada</span>
+                <span class="resultado-valor" id="resData">-</span>
+            </div>
+            <div class="resultado-linha">
+                <span class="resultado-label">Dia da Semana</span>
+                <span class="resultado-valor" id="resSemana">-</span>
+            </div>
+            <div class="resultado-linha">
+                <span class="resultado-label">Status do Turno</span>
+                <span id="resStatus">-</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="notificacao" id="toast"></div>
+
+    <script>
+        // Data Base Original: 10/01/2025 foi o primeiro dia de Folga (Ciclo: 2T, 2N, 4F)
+        const DATA_BASE = new Date(2025, 0, 10); 
+        
+        const DIAS_SEMANA = [
+            "Domingo", "Segunda-feira", "Terça-feira", 
+            "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"
+        ];
+        
+        const MESES_NOMES = [
+            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
+            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
+        ];
+
+        const seletorMes = document.getElementById('mes');
+        const seletorDia = document.getElementById('dia');
+
+        function popularDias() {
+            const mes = parseInt(seletorMes.value);
+            const ano = 2026;
+            const qtdDias = new Date(ano, mes + 1, 0).getDate();
+            
+            seletorDia.innerHTML = '';
+            for(let i = 1; i <= qtdDias; i++) {
+                const opt = document.createElement('option');
+                opt.value = i;
+                opt.textContent = `${i} de ${MESES_NOMES[mes]}`;
+                seletorDia.appendChild(opt);
+            }
+        }
+
+        seletorMes.addEventListener('change', popularDias);
+        popularDias(); // Inicializa os dias da página
+
+        function obterStatus(dataAlvo) {
+            const msPorDia = 24 * 60 * 60 * 1000;
+            // Normaliza as datas zerando as horas para evitar bugs de fuso horário
+            const d1 = new Date(DATA_BASE.getFullYear(), DATA_BASE.getMonth(), DATA_BASE.getDate());
+            const d2 = new Date(dataAlvo.getFullYear(), dataAlvo.getMonth(), dataAlvo.getDate());
+            
+            const diferencaTempo = d2.getTime() - d1.getTime();
+            const diferencaDias = Math.floor(diferencaTempo / msPorDia);
+
+            if (diferencaDias < 0) return "Fora da série histórica";
+
+            const posicaoCiclo = ((diferencaDias % 8) + 8) % 8;
+
+            if (posicaoCiclo === 0 || posicaoCiclo === 1) {
+                return '<span class="badge badge-trabalho">Trabalha - Turno Dia</span>';
+            } else if (posicaoCiclo === 2 || posicaoCiclo === 3) {
+                return '<span class="badge badge-trabalho">Trabalha - Turno Noite</span>';
+            } else {
+                return '<span class="badge badge-folga">Folga Garantida</span>';
+            }
+        }
+
+        function calcularEscala() {
+            const mes = parseInt(seletorMes.value);
+            const dia = parseInt(seletorDia.value);
+            const dataSelecionada = new Date(2026, mes, dia);
+
+            document.getElementById('resData').textContent = `${dia.toString().padStart(2, '0')}/${(mes + 1).toString().padStart(2, '0')}/2026`;
+            document.getElementById('resSemana').textContent = DIAS_SEMANA[dataSelecionada.getDay()];
+            document.getElementById('resStatus').innerHTML = obterStatus(dataSelecionada);
+
+            document.getElementById('resultadoCard').style.display = 'block';
+        }
+
+        function verProximaFolga() {
+            const mes = parseInt(seletorMes.value);
+            const dia = parseInt(seletorDia.value);
+            let dataCursor = new Date(2026, mes, dia);
+
+            for (let i = 0; i < 15; i++) {
+                let status = obterStatus(dataCursor);
+                if (status.includes("Folga Garantida")) {
+                    document.getElementById('resData').textContent = `${dataCursor.getDate().toString().padStart(2, '0')}/${(dataCursor.getMonth() + 1).toString().padStart(2, '0')}/2026`;
+                    document.getElementById('resSemana').textContent = DIAS_SEMANA[dataCursor.getDay()];
+                    document.getElementById('resStatus').innerHTML = '<span class="badge badge-ouro">Próxima Folga Aqui</span>';
+                    document.getElementById('resultadoCard').style.display = 'block';
+                    mostrarToast("Folga mais próxima localizada!");
+                    return;
+                }
+                dataCursor.setDate(dataCursor.getDate() + 1);
+            }
+        }
+
+        function limparPainel() {
+            document.getElementById('resultadoCard').style.display = 'none';
+            mostrarToast("Painel limpo");
+        }
+
+        function mostrarToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 2500);
+        }
+
+        // Registro Inteligente do Service Worker com Cache Buster (?v=1.2) para o Chrome
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js?v=1.2')
+                .then(reg => console.log('PWA ativo via SW:', reg.scope))
+                .catch(err => console.error('Erro no PWA:', err));
+            });
+        }
+    </script>
+</body>
+</html>
