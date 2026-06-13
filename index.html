@@ -1,438 +1,929 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    
-    <!-- Link para o Manifesto PWA -->
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#161923">
-    
-    <!-- Suporte para iOS (Safari) -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Escala Eliezer">
-    
-    <title>Escala Eliezer - Ultra Premium</title>
+<meta charset="UTF-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Escala Eliezer - Ultra Premium</title>
 
-    <style>
-        :root {
-            --bg-principal: #0f111a;
-            --bg-card: #161925;
-            --cor-borda: #23283b;
-            --texto-principal: #ffffff;
-            --texto-secundario: #94a3b8;
-            --primaria-azul: #3b82f6;
-            --primaria-hover: #2563eb;
-            --cor-ouro: #fbbf24;
-            --cor-ouro-hover: #f59e0b;
-            --sucesso: #10b981;
-            --perigo: #ef4444;
-            --fonte-familia: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-        }
+<style>
+  :root {
+    --bg-main: #0f1117;
+    --bg-card: #1a1d27;
+    --bg-header: #161923;
+    --bg-input: #22263a;
+    --border: #2e3350;
+    --text-main: #e8eaf0;
+    --text-muted: #7b82a0;
+    --primary: #e85555;
+    --primary-rgba: rgba(232, 85, 85, 0.15);
+    --secondary: #38d9a9;
+    --secondary-rgba: rgba(56, 217, 169, 0.15);
+    --font-mono: ui-monospace, SFMono-Regular, Consolas, monospace;
+  }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
+  [data-theme="light"] {
+    --bg-main: #f4f5f8;
+    --bg-card: #ffffff;
+    --bg-header: #ffffff;
+    --bg-input: #f0f2f7;
+    --border: #dcdfe8;
+    --text-main: #1c1e24;
+    --text-muted: #62677b;
+    --primary: #dc3545;
+    --primary-rgba: rgba(220, 53, 69, 0.15);
+    --secondary: #20c997;
+    --secondary-rgba: rgba(32, 201, 151, 0.15);
+  }
 
-        body {
-            background-color: var(--bg-principal);
-            color: var(--texto-principal);
-            font-family: var(--fonte-familia);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
-        }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; transition: background-color 0.2s, border-color 0.2s; }
+  body { background: var(--bg-main); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding-bottom: 120px; overflow-x: hidden; }
+  
+  header { background: var(--bg-header); padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 90; border-bottom: 1px solid var(--border); }
+  header h1 { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+  
+  .today-badge { background: var(--primary); color: #fff; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; box-shadow: 0 2px 8px var(--primary-rgba); }
+  .today-badge.folga-badge { background: var(--secondary); color: #0f1117; box-shadow: 0 2px 8px var(--secondary-rgba); }
+  
+  main { padding: 16px; max-width: 480px; margin: 0 auto; position: relative; }
+  
+  #ptr-indicator { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); font-weight: bold; transition: height 0.2s; }
+  
+  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+  .stat-card { background: var(--bg-card); border-radius: 14px; padding: 12px; text-align: center; border: 1px solid var(--border); }
+  .stat-card .val { font-size: 20px; font-weight: 900; font-family: var(--font-mono); }
+  .stat-card .lbl { font-size: 10px; color: var(--text-muted); margin-top: 6px; line-height: 1.2; }
+  .blue { color: var(--primary); } .green { color: var(--secondary); } .white { color: var(--text-main); }
+  
+  .action-countdown-card { background: linear-gradient(135deg, var(--primary-rgba), transparent); border: 1px solid var(--primary); border-radius: 14px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .countdown-timer { font-family: var(--font-mono); font-size: 22px; font-weight: 900; color: var(--primary); }
 
-        .container {
-            width: 100%;
-            max-width: 480px;
-            background: var(--bg-card);
-            border: 1px solid var(--cor-borda);
-            border-radius: 24px;
-            padding: 24px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            margin-top: 10px;
-        }
+  .meta-progress-container { margin-top: 8px; background: var(--bg-input); border-radius: 6px; height: 8px; overflow: hidden; width: 100%; position: relative; }
+  .meta-progress-bar { background: var(--secondary); height: 100%; width: 0%; transition: width 0.4s ease; }
 
-        header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
+  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 16px; }
+  .day-cell { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center; cursor: pointer; }
+  .day-cell:active { transform: scale(0.95); }
+  .day-cell.work-day { border-color: var(--primary-rgba); }
+  .day-cell.off-day { border-color: var(--secondary-rgba); background: rgba(56,217,169,0.02); }
+  .day-cell.today-cell { background: var(--bg-input); border: 2px solid var(--primary); }
+  .day-cell .dn { font-size: 10px; color: var(--text-muted); margin-bottom: 2px; }
+  .day-cell .dd { font-size: 15px; font-weight: bold; }
+  
+  .ponto-card { background: var(--bg-card); border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .ponto-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  .ponto-row:last-child { border-bottom: none; }
+  
+  .btn-reg { background: var(--primary); color: #fff; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: bold; }
+  .btn-reg:active { opacity: 0.8; }
+  .btn-reg:disabled { background: var(--bg-input); color: var(--text-muted); cursor: not-allowed; }
+  .btn-edit { background: transparent; border: 1px solid var(--border); color: var(--text-muted); padding: 6px 10px; border-radius: 8px; cursor: pointer; margin-right: 6px; }
+  .btn-sm { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 12px; }
+  
+  .fab-btn { position: fixed; bottom: 85px; right: 20px; width: 56px; height: 56px; background: var(--primary); color: white; border-radius: 50%; border: none; font-size: 24px; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 16px rgba(0,0,0,0.3); z-index: 80; cursor: pointer; }
+  .fab-btn:active { transform: scale(0.92); }
 
-        h1 {
-            font-size: 24px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            margin-bottom: 6px;
-            background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+  .card-padrao { background: var(--bg-card); border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
+  .card-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  
+  .sparkline-box { display: flex; align-items: flex-end; gap: 3px; height: 24px; padding-left: 10px; }
+  .spark-bar { width: 4px; background: var(--text-muted); border-radius: 1px; min-height: 4px; }
+  .spark-bar.up { background: var(--secondary); }
+  .spark-bar.down { background: var(--primary); }
 
-        .sub-header {
-            font-size: 14px;
-            color: var(--texto-secundario);
-        }
-
-        .seletor-container {
-            margin-bottom: 20px;
-        }
-
-        label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: var(--texto-secundario);
-            margin-bottom: 8px;
-        }
-
-        select {
-            width: 100%;
-            padding: 16px;
-            background: var(--bg-principal);
-            border: 1px solid var(--cor-borda);
-            border-radius: 14px;
-            color: var(--texto-principal);
-            font-size: 16px;
-            font-family: var(--fonte-familia);
-            font-weight: 500;
-            cursor: pointer;
-            outline: none;
-            transition: all 0.2s ease;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2394a3b8'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 16px center;
-            background-size: 18px;
-        }
-
-        select:focus {
-            border-color: var(--primaria-azul);
-            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
-        }
-
-        .grid-botoes {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 24px;
-        }
-
-        .btn {
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.2s ease;
-        }
-
-        .btn-principal {
-            background: var(--primaria-azul);
-            color: white;
-            grid-column: span 2;
-        }
-
-        .btn-principal:active {
-            background: var(--primaria-hover);
-            transform: scale(0.98);
-        }
-
-        .btn-ouro {
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.2);
-            color: var(--cor-ouro);
-        }
-
-        .btn-ouro:active {
-            background: rgba(251, 191, 36, 0.2);
-            transform: scale(0.97);
-        }
-
-        .btn-perigo {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            color: var(--perigo);
-        }
-
-        .btn-perigo:active {
-            background: rgba(239, 68, 68, 0.2);
-            transform: scale(0.97);
-        }
-
-        .card-resultado {
-            background: var(--bg-principal);
-            border: 1px solid var(--cor-borda);
-            border-radius: 16px;
-            padding: 20px;
-            margin-top: 8px;
-            display: none;
-            animation: fadeIn 0.3s ease-out forwards;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .resultado-linha {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(35, 40, 59, 0.5);
-        }
-
-        .resultado-linha:last-child {
-            border-bottom: none;
-            padding-bottom: 0;
-        }
-
-        .resultado-linha:first-child {
-            padding-top: 0;
-        }
-
-        .resultado-label {
-            font-size: 13px;
-            color: var(--texto-secundario);
-            font-weight: 500;
-        }
-
-        .resultado-valor {
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--texto-principal);
-        }
-
-        .badge {
-            padding: 6px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .badge-trabalho {
-            background: rgba(16, 185, 129, 0.15);
-            color: var(--sucesso);
-        }
-
-        .badge-folga {
-            background: rgba(239, 68, 68, 0.15);
-            color: var(--perigo);
-        }
-
-        .badge-ouro {
-            background: rgba(251, 191, 36, 0.15);
-            color: var(--cor-ouro);
-        }
-
-        .notificacao {
-            position: fixed;
-            bottom: 24px;
-            background: #2563eb;
-            color: white;
-            padding: 14px 24px;
-            border-radius: 12px;
-            font-size: 14px;
-            font-weight: 500;
-            box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
-            display: none;
-            animation: subir 0.3s ease forwards;
-            z-index: 1000;
-        }
-
-        @keyframes subir {
-            from { transform: translateY(100px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
-    </style>
+  .config-section { margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid var(--border); }
+  .config-section h3 { font-size: 13px; margin-bottom: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+  .btn-block { width: 100%; display: block; padding: 12px; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); border-radius: 10px; cursor: pointer; margin-bottom: 8px; font-weight: bold; text-align: center; text-decoration: none; font-size: 13px; }
+  .btn-danger { background: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 10px; cursor: pointer; width: 100%; font-weight: bold; font-size: 13px; }
+  
+  .bars-container { display: flex; align-items: flex-end; gap: 8px; height: 120px; padding-top: 25px; position: relative; }
+  .bar-wrapper { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; position: relative; z-index: 5; }
+  .bar-container-relative { width: 100%; height: 80px; position: relative; display: flex; align-items: flex-end; }
+  .bar { width: 100%; background: var(--primary); border-radius: 4px 4px 0 0; transition: height 0.3s; position: relative; z-index: 10; }
+  .bar.past-bar { background: var(--text-muted); opacity: 0.15; width: 100%; position: absolute; bottom: 0; left: 0; z-index: 1; }
+  .bar-value { font-size: 9px; font-weight: bold; font-family: var(--font-mono); margin-top: 4px; z-index: 12; color: var(--text-main); }
+  .bar-label { font-size: 9px; color: var(--text-muted); margin-top: 2px; }
+  
+  .month-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+  .mcell { background: var(--bg-input); border: 1px solid var(--border); border-radius: 8px; padding: 10px 4px; text-align: center; cursor: pointer; }
+  .mcell.off { border-color: var(--secondary); background: var(--secondary-rgba); }
+  .mcell.off .mdd { color: var(--secondary); font-weight: bold; }
+  .mcell.empty { visibility: hidden; }
+  .mcell .mdn { font-size: 9px; color: var(--text-muted); }
+  .mcell .mdd { font-size: 14px; margin-top: 2px; }
+  
+  .escala-day { display: flex; align-items: center; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; margin-bottom: 8px; cursor: pointer; gap: 12px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+  .escala-day.is-today { border-color: var(--primary); background: var(--primary-rgba); }
+  .escala-day.is-folga { border-color: var(--secondary); border-left: 5px solid var(--secondary); }
+  .escala-day.is-trabalhou { border-left: 5px solid var(--primary); }
+  .eday-date { text-align: center; min-width: 36px; }
+  .eday-date .eday-num { font-size: 20px; font-weight: 900; font-family: var(--font-mono); }
+  .eday-date .eday-num.blue { color: var(--primary); }
+  .eday-date .eday-num.green { color: var(--secondary); }
+  .eday-dow { font-size: 9px; color: var(--text-muted); text-transform: uppercase; }
+  .eday-info { flex: 1; }
+  .eday-status { font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 4px; }
+  .eday-horarios { font-size: 11px; color: var(--text-muted); font-family: var(--font-mono); margin-top: 2px; }
+  .eday-horas { font-size: 13px; font-weight: bold; font-family: var(--font-mono); }
+  
+  nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--bg-header); display: flex; padding: 8px 0 calc(8px + env(safe-area-inset-bottom)); border-top: 1px solid var(--border); z-index: 99; }
+  .nav-btn { flex: 1; background: none; border: none; color: var(--text-muted); font-size: 10px; cursor: pointer; font-weight: bold; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .nav-btn.active { color: var(--primary); }
+  .nav-icon { font-size: 18px; }
+  
+  .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 100; display: flex; align-items: flex-end; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal { background: var(--bg-header); border-radius: 20px 20px 0 0; padding: 20px 20px calc(24px + env(safe-area-inset-bottom)); width: 100%; max-width: 480px; border-top: 1px solid var(--border); }
+  .mrow { margin-bottom: 12px; }
+  .mrow label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; text-transform: uppercase; }
+  .mrow input, .mrow select { width: 100%; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 12px; border-radius: 10px; font-family: var(--font-mono); font-size: 16px; }
+  .mactions { display: flex; gap: 10px; margin-top: 20px; }
+  .btn-cancel { flex: 1; padding: 12px; background: var(--bg-input); border: none; color: var(--text-muted); border-radius: 10px; cursor: pointer; font-weight: bold; }
+  .btn-save { flex: 2; padding: 12px; background: var(--primary); border: none; color: #fff; border-radius: 10px; cursor: pointer; font-weight: bold; }
+  
+  .toast { position: fixed; bottom: 160px; left: 50%; transform: translateX(-50%); background: var(--bg-input); padding: 10px 18px; border-radius: 10px; opacity: 0; transition: 0.2s; pointer-events: none; z-index: 200; border: 1px solid var(--border); font-size: 12px; font-weight: bold; text-align: center; white-space: nowrap; box-shadow: 0 4px 12px rgba(0,0,0,0.4); }
+  .toast.show { opacity: 1; }
+  .view { display: none; } .view.active { display: block; }
+  
+  #lock-screen, #config-pin-screen { position: fixed; inset: 0; background: var(--bg-main); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  #config-pin-screen { z-index: 101; display: none; }
+  .pin-dots { display: flex; gap: 15px; margin: 25px 0; }
+  .pin-dot { width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border); transition: all 0.1s ease; }
+  .pin-dot.filled { background: var(--primary); border-color: var(--primary); transform: scale(1.2); box-shadow: 0 0 8px var(--primary); }
+  @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .pin-dots.err { animation: shake 0.2s 2; }
+  .pin-keyboard { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; width: 100%; max-width: 270px; }
+  .pin-btn { background: var(--bg-card); border: 1px solid var(--border); color: var(--text-main); font-size: 22px; font-weight: bold; padding: 14px; border-radius: 50%; aspect-ratio: 1; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+  .pin-btn:active { background: var(--bg-input); }
+  
+  .nav-month-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
+  .btn-nav-month { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; }
+  .previsao-saida { font-size: 12px; color: var(--secondary); background: var(--secondary-rgba); padding: 8px 12px; border-radius: 8px; margin-top: 10px; border: 1px dashed rgba(56,217,169,0.2); display: none; }
+  .notif-horario-row { display: flex; justify-content: space-between; margin: 8px 0; align-items: center; }
+  .notif-horario-row label { font-size: 13px; font-weight: bold; }
+  .notif-horario-row input { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 8px; border-radius: 8px; text-align: center; font-family: var(--font-mono); width: 85px; }
+  .btn-notif { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; text-align: center; font-size: 12px; }
+  .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
+</style>
 </head>
 <body>
 
-    <div class="container">
-        <header>
-            <h1>Escala Eliezer</h1>
-            <div class="sub-header">Premium Shift Management</div>
-        </header>
+<div id="ptr-indicator">&#x2728; Atualizando dados...</div>
 
-        <div class="seletor-container">
-            <label for="mes">Mês de Referência</label>
-            <select id="mes">
-                <option value="0">Janeiro 2026</option>
-                <option value="1">Fevereiro 2026</option>
-                <option value="2">Março 2026</option>
-                <option value="3">Abril 2026</option>
-                <option value="4">Maio 2026</option>
-                <option value="5" selected>Junho 2026</option>
-                <option value="6">Julho 2026</option>
-                <option value="7">Agosto 2026</option>
-                <option value="8">Setembro 2026</option>
-                <option value="9">Outubro 2026</option>
-                <option value="10">Novembro 2026</option>
-                <option value="11">Dezembro 2026</option>
-            </select>
-        </div>
+<div id="lock-screen" style="display:none;">
+  <div style="font-size:40px; margin-bottom:10px;">&#x1F512;</div>
+  <h2 style="font-size:18px;font-weight:bold;margin-bottom:4px;">Aplicativo Bloqueado</h2>
+  <p style="font-size:12px;color:var(--text-muted);">Insira seu PIN numérico</p>
+  <div class="pin-dots" id="lock-dots">
+    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+  </div>
+  <div class="pin-keyboard">
+    <button class="pin-btn" onclick="pressPin(1)">1</button><button class="pin-btn" onclick="pressPin(2)">2</button><button class="pin-btn" onclick="pressPin(3)">3</button>
+    <button class="pin-btn" onclick="pressPin(4)">4</button><button class="pin-btn" onclick="pressPin(5)">5</button><button class="pin-btn" onclick="pressPin(6)">6</button>
+    <button class="pin-btn" onclick="pressPin(7)">7</button><button class="pin-btn" onclick="pressPin(8)">8</button><button class="pin-btn" onclick="pressPin(9)">9</button>
+    <button class="pin-btn" style="background:transparent;border:none;font-size:13px;color:var(--text-muted);" onclick="clearPin()">Limpar</button><button class="pin-btn" onclick="pressPin(0)">0</button><button class="pin-btn" style="background:transparent;border:none;font-size:16px;color:var(--primary);" onclick="backspacePin()">&#x232B;</button>
+  </div>
+</div>
 
-        <div class="seletor-container">
-            <label for="dia">Dia do Mês</label>
-            <select id="dia"></select>
-        </div>
+<div id="config-pin-screen">
+  <div style="font-size:40px; margin-bottom:10px;">&#x2699;</div>
+  <h2 id="config-pin-title" style="font-size:18px;font-weight:bold;margin-bottom:4px;">Configurar Novo PIN</h2>
+  <p style="font-size:12px;color:var(--text-muted);">Digite 4 dígitos numéricos</p>
+  <div class="pin-dots" id="config-pin-dots">
+    <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
+  </div>
+  <div class="pin-keyboard">
+    <button class="pin-btn" onclick="pressConfigPin(1)">1</button><button class="pin-btn" onclick="pressConfigPin(2)">2</button><button class="pin-btn" onclick="pressConfigPin(3)">3</button>
+    <button class="pin-btn" onclick="pressConfigPin(4)">4</button><button class="pin-btn" onclick="pressConfigPin(5)">5</button><button class="pin-btn" onclick="pressConfigPin(6)">6</button>
+    <button class="pin-btn" onclick="pressConfigPin(7)">7</button><button class="pin-btn" onclick="pressConfigPin(8)">8</button><button class="pin-btn" onclick="pressConfigPin(9)">9</button>
+    <button class="pin-btn" style="background:transparent;border:none;font-size:13px;color:var(--text-muted);" onclick="cancelarConfigPIN()">Fechar</button><button class="pin-btn" onclick="pressConfigPin(0)">0</button><button class="pin-btn" style="background:transparent;border:none;font-size:16px;color:var(--primary);" onclick="backspaceConfigPin()">&#x232B;</button>
+  </div>
+</div>
 
-        <div class="grid-botoes">
-            <button class="btn btn-principal" onclick="calcularEscala()">
-                Calcular Status
-            </button>
-            <button class="btn btn-ouro" onclick="verProximaFolga()">
-                Próxima Folga
-            </button>
-            <button class="btn btn-perigo" onclick="limparPainel()">
-                Limpar
-            </button>
-        </div>
-
-        <div class="card-resultado" id="resultadoCard">
-            <div class="resultado-linha">
-                <span class="resultado-label">Data Selecionada</span>
-                <span class="resultado-valor" id="resData">-</span>
-            </div>
-            <div class="resultado-linha">
-                <span class="resultado-label">Dia da Semana</span>
-                <span class="resultado-valor" id="resSemana">-</span>
-            </div>
-            <div class="resultado-linha">
-                <span class="resultado-label">Status do Turno</span>
-                <span id="resStatus">-</span>
-            </div>
-        </div>
+<div id="app-content" style="display:none;">
+<header>
+  <h1 id="main-title">Carregando...</h1>
+  <div class="today-badge" id="today-badge">—</div>
+</header>
+<main>
+  <div class="view active" id="view-hoje">
+    <div class="action-countdown-card" id="countdown-card" style="display: none;">
+      <div>
+        <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);" id="countdown-label">Próxima Ação</div>
+        <div style="font-size: 14px; font-weight: bold;" id="countdown-desc">Aguardando registro...</div>
+      </div>
+      <div class="countdown-timer" id="countdown-clock">00:00:00</div>
     </div>
 
-    <div class="notificacao" id="toast"></div>
+    <div class="stats">
+      <div class="stat-card"><div class="val blue" id="stat-dias">0</div><div class="lbl">Dias<br>Trabalhados</div></div>
+      <div class="stat-card"><div class="val green" id="stat-folgas">0</div><div class="lbl">Folgas<br>no Mês</div></div>
+      <div class="stat-card">
+        <div class="val white" id="stat-horas">0h</div>
+        <div class="lbl">Horas Mês<br><span id="stat-projecao" style="color:var(--text-muted);font-size:9px;">Proj: --</span></div>
+      </div>
+    </div>
 
-    <script>
-        // Data Base Original: 10/01/2025 foi o primeiro dia de Folga (Ciclo: 2T, 2N, 4F)
-        const DATA_BASE = new Date(2025, 0, 10); 
-        
-        const DIAS_SEMANA = [
-            "Domingo", "Segunda-feira", "Terça-feira", 
-            "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"
-        ];
-        
-        const MESES_NOMES = [
-            "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
-            "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"
-        ];
+    <div class="week-grid" id="week-grid"></div>
+    
+    <div class="ponto-card">
+      <div class="card-header-flex">
+        <h2>&#x23F1; Ponto de Hoje</h2>
+        <div style="display:flex;gap:6px;">
+          <button class="btn-sm" style="background:var(--secondary-rgba);color:var(--secondary);border-color:rgba(56,217,169,0.2);" onclick="preencherDiaPadraoAutomatico()">&#x26A1; Auto</button>
+          <button class="btn-sm" onclick="abrirModalDia(todayKey)">&#x270F; Detalhes</button>
+        </div>
+      </div>
+      <div id="ponto-body"></div>
+      <div class="previsao-saida" id="previsao-saida-box"></div>
+    </div>
 
-        const seletorMes = document.getElementById('mes');
-        const seletorDia = document.getElementById('dia');
+    <div class="card-padrao">
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); font-weight:bold; text-transform:uppercase;">
+        <span>&#x1F3AF; Meta do Mês Corrente</span>
+        <span id="meta-porcentagem-texto" style="font-family:var(--font-mono); color:var(--text-main);">0%</span>
+      </div>
+      <div class="meta-progress-container">
+        <div class="meta-progress-bar" id="meta-progress-bar"></div>
+      </div>
+      <div style="font-size:11px; color:var(--text-muted); margin-top:6px;" id="meta-status-texto">0h de 0h necessárias cumpridas</div>
+    </div>
+    
+    <div class="card-padrao" id="banco-horas-card">
+      <h2 style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">&#x1F4CA; Banco de Horas Acumulado</h2>
+      <div style="display:flex;justify-content:between;align-items:center; width:100%;">
+        <div style="flex:1; display:flex; align-items:center; justify-content:space-between;">
+          <span id="banco-horas-valor" style="font-size:26px;font-weight:900;color:var(--secondary);font-family:var(--font-mono);">0h 00m</span>
+          <div class="sparkline-box" id="sparkline-trend" title="Tendência dos últimos 5 dias registrados"></div>
+        </div>
+        <button class="btn-sm" style="margin-left:14px;" onclick="ajustarBancoHoras()">Ajustar</button>
+      </div>
+    </div>
+    
+    <div class="card-padrao" id="resumo-card" style="display:none;">
+      <h2 style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;">Resumo do Dia</h2>
+      <div class="horas-big" id="horas-big" style="font-size:36px;font-weight:900;color:var(--primary);font-family:var(--font-mono);">—</div>
+      <div id="res-ef" style="margin-top:8px; font-size:14px; line-height:1.4;"></div>
+    </div>
+    
+    <div class="card-padrao"><h2>&#x1F4C8; Comparativo Semanal (Atual vs Anterior)</h2><div id="grafico-container"></div></div>
+    <div class="card-padrao"><div class="card-header-flex" style="margin-bottom:0;"><h2>&#x1F514; Lembretes Ativos</h2><span class="today-badge" style="background:var(--secondary);" id="notif-status-badge">ATIVO</span></div><div id="notif-container" style="margin-top:14px;"></div></div>
+  </div>
+  
+  <div class="view" id="view-folgas">
+    <div class="card-padrao">
+      <div class="nav-month-header">
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(-1)">&#x25C0;</button>
+        <h2 style="font-size:16px;"><span id="folgas-mes-nome"></span></h2>
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(1)">&#x25B6;</button>
+      </div>
+      <div style="background: var(--bg-input); padding: 12px; border-radius: 10px; margin-bottom: 14px; border:1px solid var(--border);">
+        <span style="font-size: 11px; font-weight: bold; text-transform: uppercase; color: var(--text-muted); display: block; margin-bottom: 6px;">&#x2699; Marcar Folgas em Lote</span>
+        <div style="display: flex; gap: 8px;">
+          <select id="select-lote-dow" style="flex:1; padding:6px; background:var(--bg-card); color:var(--text-main); border:1px solid var(--border); border-radius:6px; font-size:12px;">
+            <option value="1">Todas as Segundas</option>
+            <option value="2">Todas as Terças</option>
+            <option value="3">Todas as Quartas</option>
+            <option value="4">Todas as Quintas</option>
+            <option value="5">Todas as Sextas</option>
+            <option value="6">Todos os Sábados</option>
+            <option value="0">Todos os Domingos</option>
+          </select>
+          <button class="btn-sm" style="background: var(--primary); color:white; border:none;" onclick="aplicarFolgaLote(true)">Marcar</button>
+          <button class="btn-sm" onclick="aplicarFolgaLote(false)">Limpar</button>
+        </div>
+      </div>
+      <div class="month-grid" id="month-grid"></div>
+    </div>
+  </div>
+  
+  <div class="view" id="view-escala">
+    <div class="card-padrao">
+      <div class="nav-month-header">
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(-1)">&#x25C0;</button>
+        <h2 style="font-size:16px;"><span id="escala-mes-nome"></span></h2>
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(1)">&#x25B6;</button>
+      </div>
+      <div id="escala-list"></div>
+    </div>
+  </div>
+  
+  <div class="view" id="view-historico">
+    <div class="card-padrao">
+      <div class="nav-month-header">
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(-1)">&#x25C0;</button>
+        <h2 style="font-size:16px;"><span id="hist-mes-nome"></span></h2>
+        <button class="btn-nav-month" onclick="mudarMesNavegacao(1)">&#x25B6;</button>
+      </div>
+      <div id="hist-list"></div>
+    </div>
+  </div>
 
-        function popularDias() {
-            const mes = parseInt(seletorMes.value);
-            const ano = 2026;
-            const qtdDias = new Date(ano, mes + 1, 0).getDate();
-            
-            seletorDia.innerHTML = '';
-            for(let i = 1; i <= qtdDias; i++) {
-                const opt = document.createElement('option');
-                opt.value = i;
-                opt.textContent = `${i} de ${MESES_NOMES[mes]}`;
-                seletorDia.appendChild(opt);
-            }
-        }
+  <div class="view" id="view-config">
+    <div class="card-padrao">
+      <h2>&#x2699; Configurações e Segurança</h2>
+      <p style="font-size:12px;color:var(--text-muted);margin:10px 0">Gerenciamento interno e customização</p>
+      
+      <div class="config-section">
+        <h3>&#x1F3A8; Aparência Visual</h3>
+        <button class="btn-block" id="btn-toggle-theme" onclick="toggleTheme()">Alternar para Tema Claro</button>
+      </div>
 
-        seletorMes.addEventListener('change', popularDias);
-        popularDias(); // Inicializa os dias da página
+      <div class="config-section">
+        <h3>&#x1F512; Bloqueio por PIN</h3>
+        <button class="btn-block" id="btn-toggle-senha" onclick="abrirConfigPIN()">Ativar PIN do Aplicativo</button>
+      </div>
 
-        function obterStatus(dataAlvo) {
-            const msPorDia = 24 * 60 * 60 * 1000;
-            // Normaliza as datas zerando as horas para evitar bugs de fuso horário
-            const d1 = new Date(DATA_BASE.getFullYear(), DATA_BASE.getMonth(), DATA_BASE.getDate());
-            const d2 = new Date(dataAlvo.getFullYear(), dataAlvo.getMonth(), dataAlvo.getDate());
-            
-            const diferencaTempo = d2.getTime() - d1.getTime();
-            const diferencaDias = Math.floor(diferencaTempo / msPorDia);
+      <div class="config-section">
+        <h3>&#x1F4BE; Backup & Relatórios</h3>
+        <button class="btn-block" onclick="exportarBackupJSON()">Exportar Arquivo de Backup (JSON)</button>
+        <button class="btn-block" onclick="document.getElementById('import-file').click()">Importar Arquivo de Backup (JSON)</button>
+        <input type="file" id="import-file" style="display:none" onchange="importarBackupJSON(this)">
+        <button class="btn-block" onclick="exportarCSV()">Exportar Relatório Mensal (CSV)</button>
+        <button class="btn-block" onclick="exportarPDFHTML()">Imprimir / Exportar Relatório (PDF)</button>
+      </div>
+      
+      <div class="danger-zone">
+        <h3 style="font-size:13px;color:var(--primary);margin-bottom:6px">Zona de Perigo</h3>
+        <p style="font-size:11px;color:var(--text-muted);margin-bottom:12px">Isso apagará permanentemente todos os seus dados locais.</p>
+        <button class="btn-danger" onclick="limparTodosDados()">Limpar Banco de Dados</button>
+      </div>
+    </div>
+  </div>
+</main>
 
-            if (diferencaDias < 0) return "Fora da série histórica";
+<button class="fab-btn" id="fab-ponto-rapido" onclick="baterProximoPontoFAB()">&#x1F4CC;</button>
 
-            const posicaoCiclo = ((diferencaDias % 8) + 8) % 8;
+<nav>
+  <button class="nav-btn active" id="nav-hoje" onclick="switchView('hoje')"><span class="nav-icon">&#x23F0;</span>Hoje</button>
+  <button class="nav-btn" id="nav-folgas" onclick="switchView('folgas')"><span class="nav-icon">&#x1F4C5;</span>Folgas</button>
+  <button class="nav-btn" id="nav-escala" onclick="switchView('escala')"><span class="nav-icon">&#x1F5D3;</span>Escala</button>
+  <button class="nav-btn" id="nav-historico" onclick="switchView('historico')"><span class="nav-icon">&#x1F4DC;</span>Histórico</button>
+  <button class="nav-btn" id="nav-config" onclick="switchView('config')"><span class="nav-icon">&#x2699;</span>Config</button>
+</nav>
+</div>
 
-            if (posicaoCiclo === 0 || posicaoCiclo === 1) {
-                return '<span class="badge badge-trabalho">Trabalha - Turno Dia</span>';
-            } else if (posicaoCiclo === 2 || posicaoCiclo === 3) {
-                return '<span class="badge badge-trabalho">Trabalha - Turno Noite</span>';
-            } else {
-                return '<span class="badge badge-folga">Folga Garantida</span>';
-            }
-        }
+<div class="modal-overlay" id="modal-dia"><div class="modal"><h3 id="mdtitle">Editar Dia</h3><p class="modal-sub" id="mdsub" style="font-size:12px;color:var(--text-muted);margin-bottom:14px;"></p><div id="md-pontos"><div class="mrow"><label>Entrada</label><input type="time" id="md-entrada"></div><div class="mrow"><label>Intervalo</label><input type="time" id="md-almoco-saida"></div><div class="mrow"><label>Retorno</label><input type="time" id="md-almoco-volta"></div><div class="mrow"><label>Saída</label><input type="time" id="md-saida"></div></div><div class="mactions"><button class="btn-cancel" onclick="fecharModal('modal-dia')">Cancelar</button><button class="btn-save" onclick="salvarDia()">Salvar</button></div></div></div>
+<div class="modal-overlay" id="modal-hora"><div class="modal"><h3 id="mhtitle">Editar Horário</h3><br><div class="mrow"><label>Horário</label><input type="time" id="mh-input"></div><div class="mactions"><button class="btn-cancel" onclick="fecharModal('modal-hora')">Cancelar</button><button class="btn-save" onclick="salvarHora()">Salvar</button></div></div></div>
+<div class="toast" id="toast"></div>
 
-        function calcularEscala() {
-            const mes = parseInt(seletorMes.value);
-            const dia = parseInt(seletorDia.value);
-            const dataSelecionada = new Date(2026, mes, dia);
+<script>
+const DAYS_FULL=['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'],DAYS=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'],MONTHS=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],KEY='escala_v4',DEFAULT={entrada:'14:00','almoco-saida':'16:00','almoco-volta':'17:00',saida:'22:20'},LABELS={entrada:'Entrada','almoco-saida':'Intervalo','almoco-volta':'Retorno',saida:'Saída'};
 
-            document.getElementById('resData').textContent = `${dia.toString().padStart(2, '0')}/${(mes + 1).toString().padStart(2, '0')}/2026`;
-            document.getElementById('resSemana').textContent = DIAS_SEMANA[dataSelecionada.getDay()];
-            document.getElementById('resStatus').innerHTML = obterStatus(dataSelecionada);
+let data=load(), now=new Date();
+let viewYear = now.getFullYear();
+let viewMonth = now.getMonth();
+let countdownInterval = null;
+let todayKey = now.getFullYear() + '-' + String(now.getMonth() + 1).padStart(2, '0') + '-' + String(now.getDate()).padStart(2, '0');
 
-            document.getElementById('resultadoCard').style.display = 'block';
-        }
+function triggerHaptic() { try { if (navigator.vibrate) navigator.vibrate(35); } catch(e){} }
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{}}catch(e){return{}}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data)); backupIndexedDB();}catch(e){}}
+function dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function isDayOff(d){return!!(data[dk(d)]&&data[dk(d)].folga)}
 
-        function verProximaFolga() {
-            const mes = parseInt(seletorMes.value);
-            const dia = parseInt(seletorDia.value);
-            let dataCursor = new Date(2026, mes, dia);
-
-            for (let i = 0; i < 15; i++) {
-                let status = obterStatus(dataCursor);
-                if (status.includes("Folga Garantida")) {
-                    document.getElementById('resData').textContent = `${dataCursor.getDate().toString().padStart(2, '0')}/${(dataCursor.getMonth() + 1).toString().padStart(2, '0')}/2026`;
-                    document.getElementById('resSemana').textContent = DIAS_SEMANA[dataCursor.getDay()];
-                    document.getElementById('resStatus').innerHTML = '<span class="badge badge-ouro">Próxima Folga Aqui</span>';
-                    document.getElementById('resultadoCard').style.display = 'block';
-                    mostrarToast("Folga mais próxima localizada!");
-                    return;
+const DB_NAME = 'EscalaEliezerDB', DB_VERSION = 1;
+function backupIndexedDB() {
+    try {
+        if(!window.indexedDB) return;
+        let request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onupgradeneeded = function(e) {
+            let db = e.target.result;
+            if (!db.objectStoreNames.contains('backups')) db.createObjectStore('backups', { keyPath: 'id' });
+        };
+        request.onsuccess = function(e) {
+            let db = e.target.result, tx = db.transaction('backups', 'readwrite'), store = tx.objectStore('backups');
+            store.put({ id: 'weekly_auto', timestamp: Date.now(), dataset: data });
+        };
+    } catch(e) { console.error("IDB Fail", e); }
+}
+function recuperarBackupAutomaticoIDB() {
+    try {
+        if(!window.indexedDB) return;
+        let request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onsuccess = function(e) {
+            let db = e.target.result;
+            if (!db.objectStoreNames.contains('backups')) return;
+            let tx = db.transaction('backups', 'readonly'), store = tx.objectStore('backups'), getReq = store.get('weekly_auto');
+            getReq.onsuccess = function() {
+                if(getReq.result && Object.keys(data).length === 0) {
+                    if(confirm("Encontramos um backup interno automático recente. Deseja restaurar?")) {
+                        data = getReq.result.dataset; save(); runApp(); showToast(" Restaurado do IndexedDB");
+                    }
                 }
-                dataCursor.setDate(dataCursor.getDate() + 1);
             }
-        }
+        };
+    } catch(e){ console.error("IDB Recovery Fail", e); }
+}
 
-        function limparPainel() {
-            document.getElementById('resultadoCard').style.display = 'none';
-            mostrarToast("Painel limpo");
-        }
+function initTheme() {
+    try {
+        let saved = localStorage.getItem('app_theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', saved);
+        let btn = document.getElementById('btn-toggle-theme');
+        if(btn) btn.textContent = saved === 'dark' ? "Alternar para Tema Claro" : "Alternar para Tema Escuro";
+    } catch(e){}
+}
+function toggleTheme() {
+    triggerHaptic();
+    let curr = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', curr);
+    try { localStorage.setItem('app_theme', curr); } catch(e){}
+    initTheme();
+}
 
-        function mostrarToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 2500);
-        }
+let currentPinInput = "";
+function verificarSenhaAcesso(){
+    initTheme();
+    let pinSalvo = null;
+    try { pinSalvo = localStorage.getItem('app_pin'); } catch(e){}
+    
+    if(pinSalvo){
+        document.getElementById('app-content').style.display = 'none';
+        document.getElementById('lock-screen').style.display = 'flex';
+        currentPinInput = ""; updatePinDots();
+    } else {
+        document.getElementById('lock-screen').style.display = 'none';
+        document.getElementById('app-content').style.display = 'block';
+        runApp();
+    }
+}
 
-        // Registro Inteligente do Service Worker com Cache Buster (?v=1.2) para o Chrome
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('sw.js?v=1.2')
-                .then(reg => console.log('PWA ativo via SW:', reg.scope))
-                .catch(err => console.error('Erro no PWA:', err));
-            });
+function pressPin(num) {
+    triggerHaptic();
+    if(currentPinInput.length < 4) { currentPinInput += num; updatePinDots(); }
+    if(currentPinInput.length === 4) {
+        setTimeout(() => {
+            let pinSalvo = localStorage.getItem('app_pin');
+            if(currentPinInput === pinSalvo) {
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                runApp();
+            } else { 
+                triggerHaptic();
+                document.getElementById('lock-dots').classList.add('err');
+                setTimeout(()=>document.getElementById('lock-dots').classList.remove('err'), 400);
+                showToast(" PIN Incorreto!"); clearPin(); 
+            }
+        }, 150);
+    }
+}
+function clearPin() { currentPinInput = ""; updatePinDots(); }
+function backspacePin() { triggerHaptic(); currentPinInput = currentPinInput.slice(0, -1); updatePinDots(); }
+function updatePinDots() {
+    let dots = document.querySelectorAll('#lock-dots .pin-dot');
+    dots.forEach((dot, idx) => {
+        if(idx < currentPinInput.length) dot.classList.add('filled');
+        else dot.classList.remove('filled');
+    });
+}
+
+let configPinInput = "";
+function abrirConfigPIN() {
+    triggerHaptic();
+    let abrir = null; try{ abrir = localStorage.getItem('app_pin'); }catch(e){}
+    if(abrir) {
+        if(confirm("Deseja remover o bloqueio por PIN?")) {
+            try{ localStorage.removeItem('app_pin'); }catch(e){} 
+            showToast(" PIN removido"); atualizarBotaoSenhaVisual();
         }
-    </script>
+    } else {
+        configPinInput = ""; document.getElementById('config-pin-screen').style.display = 'flex'; updateConfigPinDots();
+    }
+}
+function cancelarConfigPIN() { document.getElementById('config-pin-screen').style.display = 'none'; }
+function pressConfigPin(num) {
+    triggerHaptic();
+    if(configPinInput.length < 4) { configPinInput += num; updateConfigPinDots(); }
+    if(configPinInput.length === 4) {
+        setTimeout(() => {
+            try{ localStorage.setItem('app_pin', configPinInput); }catch(e){}
+            showToast(" PIN Ativado!");
+            document.getElementById('config-pin-screen').style.display = 'none'; atualizarBotaoSenhaVisual();
+        }, 150);
+    }
+}
+function backspaceConfigPin() { triggerHaptic(); configPinInput = configPinInput.slice(0, -1); updateConfigPinDots(); }
+function updateConfigPinDots() {
+    let dots = document.querySelectorAll('#config-pin-dots .pin-dot');
+    dots.forEach((dot, idx) => {
+        if(idx < configPinInput.length) dot.classList.add('filled');
+        else dot.classList.remove('filled');
+    });
+}
+function atualizarBotaoSenhaVisual(){
+    let btn=document.getElementById('btn-toggle-senha'); if(!btn)return;
+    let atual=null; try{ atual=localStorage.getItem('app_pin'); }catch(e){}
+    btn.textContent=atual?"Desativar Bloqueio por PIN":"Ativar PIN do Aplicativo";
+}
+
+function updateTitle() {
+    let tEl = document.getElementById('main-title');
+    if(tEl) tEl.textContent = DAYS_FULL[now.getDay()] + ", " + now.getDate() + " de " + MONTHS[now.getMonth()];
+}
+
+function validarHorariosInconsistentes(rec) {
+    if(!rec.entrada || !rec.saida) return false;
+    let toMin = h => { let s=h.split(':'); return (parseInt(s[0])*60)+parseInt(s[1]); };
+    if(toMin(rec.saida) <= toMin(rec.entrada)) return "Erro: Saída não pode ser antes da Entrada.";
+    if(rec['almoco-saida'] && toMin(rec['almoco-saida']) <= toMin(rec.entrada)) return "Erro: Intervalo inválido.";
+    if(rec['almoco-volta'] && rec['almoco-saida'] && toMin(rec['almoco-volta']) <= toMin(rec['almoco-saida'])) return "Erro: Retorno inválido.";
+    return false;
+}
+
+function runApp(){
+    updateTitle();
+    let badge = document.getElementById('today-badge');
+    let isOff = isDayOff(now);
+    if(badge) {
+        badge.textContent = isOff ? '\uFE0F Folga' : ' Escala';
+        badge.className = isOff ? 'today-badge folga-badge' : 'today-badge';
+    }
+    
+    let fab = document.getElementById('fab-ponto-rapido');
+    if(fab) fab.style.display = isOff ? 'none' : 'flex';
+
+    atualizarBotaoSenhaVisual();
+    renderWeek();
+    renderPonto();
+    renderStats();
+    renderBancoHoras();
+    initCountdown();
+    startNotificationEngine();
+}
+
+function baterProximoPontoFAB() {
+    if(isDayOff(now)) return;
+    triggerHaptic();
+    let rec = data[todayKey] || {};
+    let tipos = ['entrada', 'almoco-saida', 'almoco-volta', 'saida'];
+    let proximo = tipos.find(t => !rec[t]);
+    
+    if(!proximo) { showToast(" Pontos de hoje completos!"); return; }
+    let horariaAtual = new Date().toTimeString().slice(0,5);
+    
+    let clone = Object.assign({}, rec); clone[proximo] = horariaAtual;
+    let erroStr = validarHorariosInconsistentes(clone);
+    if(erroStr) { alert(` Inconsistência:\n${erroStr}`); return; }
+
+    data[todayKey] = data[todayKey] || {}; data[todayKey][proximo] = horariaAtual;
+    save(); runApp(); showToast(` ${LABELS[proximo]} batido: ${horariaAtual}`);
+}
+
+function renderWeek(){let g=document.getElementById('week-grid'),dow=now.getDay(),mon=new Date(now);if(!g)return;mon.setDate(now.getDate()-((dow===0?7:dow)-1));g.innerHTML='';for(let i=0;i<7;i++){let d=new Date(mon);d.setDate(mon.getDate()+i);let k=dk(d),isOff=isDayOff(d),isToday=k===todayKey,rec=data[k]||{},c=document.createElement('div');c.className='day-cell'+(isOff?' off-day':' work-day')+(isToday?' today-cell':'');c.innerHTML='<div class="dn">'+DAYS[d.getDay()]+'</div><div class="dd">'+d.getDate()+'</div>';c.onclick=()=>abrirModalDia(k);g.appendChild(c)}}
+
+function renderPonto(){
+    let isOff=isDayOff(now),rec=data[todayKey]||{},b=document.getElementById('ponto-body');
+    if(!b)return;
+    if(isOff){b.innerHTML='<div style="text-align:center;padding:24px;color:var(--text-muted);">\uFE0F Hoje é sua folga configurada!</div>';document.getElementById('resumo-card').style.display='none';document.getElementById('previsao-saida-box').style.display='none';return}
+    let tipos=['entrada','almoco-saida','almoco-volta','saida'],html='';
+    tipos.forEach((t,i)=>{
+        let val=rec[t],deps=[true,!!rec.entrada,!!rec['almoco-saida'],!!rec['almoco-volta']];
+        html+='<div class="ponto-row"><div><strong>'+LABELS[t]+'</strong><br><small style="color:var(--text-muted);font-family:var(--font-mono);">padrão '+DEFAULT[t]+'</small></div><div style="display:flex;align-items:center;"><span style="margin-right:12px;font-weight:bold;font-family:var(--font-mono);font-size:15px;color:'+(val?'var(--text-main)':'var(--border)')+'">'+(val||'--:--')+'</span><button class="btn-edit" onclick="abrirModalHora(\''+t+'\')">&#x270F;&#xFE0F;</button>'+(val?'':'<button class="btn-reg" '+(deps[i]?'':'disabled')+' onclick="baterPonto(\''+t+'\')">&#x1F4CC;</button>')+'</div></div>';
+    });
+    b.innerHTML=html;
+    
+    let prevBox = document.getElementById('previsao-saida-box');
+    if(rec.entrada && rec['almoco-saida'] && rec['almoco-volta'] && !rec.saida){
+        let entSplit=rec.entrada.split(':'), almsSplit=rec['almoco-saida'].split(':'), almvSplit=rec['almoco-volta'].split(':');
+        let entMin=(parseInt(entSplit[0])*60)+parseInt(entSplit[1]), almsMin=(parseInt(almsSplit[0])*60)+parseInt(almsSplit[1]), almvMin=(parseInt(almvSplit[0])*60)+parseInt(almvSplit[1]);
+        let saidaProjetadaMin = entMin + 440 + (almvMin - almsMin);
+        let hProj = Math.floor(saidaProjetadaMin/60), mProj = saidaProjetadaMin%60;
+        if(prevBox) {
+            prevBox.innerHTML = `\uFE0F <strong>Previsão de Saída:</strong> Saia às <strong>${String(hProj).padStart(2,'0')}:${String(mProj).padStart(2,'0')}</strong> (7h20m líquidas).`;
+            prevBox.style.display = 'block';
+        }
+    } else { if(prevBox) prevBox.style.display = 'none'; }
+
+    let rCard = document.getElementById('resumo-card');
+    if(rec.entrada&&rec.saida){
+        let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1]));
+        if(rCard) rCard.style.display='block';
+        let hBig = document.getElementById('horas-big'); if(hBig) hBig.textContent=Math.floor(mt/60)+'h '+String(mt%60).padStart(2,'0')+'m';
+        let mi=0; if(rec['almoco-saida']&&rec['almoco-volta']){ let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':'); mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1])); }
+        let rEf = document.getElementById('res-ef'); if(rEf) rEf.innerHTML='<strong>Horas efetivas: '+Math.floor((mt-mi)/60)+'h '+String((mt-mi)%60).padStart(2,'0')+'m</strong>';
+    }else{ if(rCard) rCard.style.display='none'; }
+}
+
+function initCountdown() {
+    if(countdownInterval) clearInterval(countdownInterval);
+    let card = document.getElementById('countdown-card');
+    if(!card) return;
+    if(isDayOff(now)) { card.style.display = 'none'; return; }
+    
+    let tick = () => {
+        let rec = data[todayKey] || {};
+        let lbl = document.getElementById('countdown-label');
+        let desc = document.getElementById('countdown-desc');
+        let clock = document.getElementById('countdown-clock');
+        
+        let targetTimeStr = null;
+        if(!rec.entrada) { lbl.textContent = "Próxima Ação"; desc.textContent = "Entrada da Escala"; targetTimeStr = DEFAULT.entrada; }
+        else if(!rec['almoco-saida']) { lbl.textContent = "Período p/ Intervalo"; desc.textContent = "Saída para Almoço"; targetTimeStr = DEFAULT['almoco-saida']; }
+        else if(!rec['almoco-volta']) { lbl.textContent = "Retorno Intervalo"; desc.textContent = "Volta do Almoço"; targetTimeStr = DEFAULT['almoco-volta']; }
+        else if(!rec.saida) {
+            lbl.textContent = "Fim do Expediente"; desc.textContent = "Saída Estimada";
+            if(rec.entrada && rec['almoco-saida'] && rec['almoco-volta']) {
+                let ent=rec.entrada.split(':'), as=rec['almoco-saida'].split(':'), av=rec['almoco-volta'].split(':');
+                let calc = (parseInt(ent[0])*60)+parseInt(ent[1]) + 440 + ((parseInt(av[0])*60)+parseInt(av[1]) - ((parseInt(as[0])*60)+parseInt(as[1])));
+                targetTimeStr = `${String(Math.floor(calc/60)).padStart(2,'0')}:${String(calc%60).padStart(2,'0')}`;
+            } else targetTimeStr = DEFAULT.saida;
+        }
+        
+        if(!targetTimeStr || rec.saida) { card.style.display = 'none'; return; }
+        card.style.display = 'flex';
+        
+        let dTarget = new Date(); dTarget.setHours(targetTimeStr.split(':')[0], targetTimeStr.split(':')[1], 0);
+        let diffMs = dTarget - new Date();
+        if(diffMs < 0) { clock.textContent = "00:00:00"; desc.textContent = "Horário atingido!"; return; }
+        
+        let h = Math.floor(diffMs/3600000), m = Math.floor((diffMs%3600000)/60000), s = Math.floor((diffMs%60000)/1000);
+        clock.textContent = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    };
+    tick(); countdownInterval = setInterval(tick, 1000);
+}
+
+function preencherDiaPadraoAutomatico() {
+    if(isDayOff(now)) return;
+    triggerHaptic();
+    if(confirm("Preencher hoje com o horário padrão?")) {
+        data[todayKey] = { entrada: DEFAULT.entrada, 'almoco-saida': DEFAULT['almoco-saida'], 'almoco-volta': DEFAULT['almoco-volta'], saida: DEFAULT.saida };
+        save(); runApp(); showToast(" Inserido!");
+    }
+}
+
+function baterPonto(t){ triggerHaptic(); let h=new Date().toTimeString().slice(0,5); data[todayKey]=data[todayKey]||{}; data[todayKey][t]=h; save(); runApp(); showToast(' Registrado!')}
+let _ht=null;
+function abrirModalHora(t){_ht=t;let val=(data[todayKey]||{})[t]||DEFAULT[t];document.getElementById('mhtitle').textContent='Editar - '+LABELS[t];document.getElementById('mh-input').value=val;abrirModal('modal-hora')}
+function salvarHora(){
+    let v=document.getElementById('mh-input').value; if(!v)return;
+    let clone = Object.assign({}, data[todayKey]||{}); clone[_ht] = v;
+    let err = validarHorariosInconsistentes(clone);
+    if(err) { alert(err); return; }
+    data[todayKey]=data[todayKey]||{}; data[todayKey][_ht]=v; save(); fecharModal('modal-hora'); runApp(); showToast(' Salvo!');
+}
+
+let _ek=null;
+function abrirModalDia(k){_ek=k;let date=new Date(k+'T12:00:00'),rec=data[k]||{};document.getElementById('mdtitle').textContent=date.getDate()+' de '+MONTHS[date.getMonth()];document.getElementById('mdsub').textContent=DAYS_FULL[date.getDay()];document.getElementById('md-entrada').value=rec.entrada||DEFAULT.entrada;document.getElementById('md-almoco-saida').value=rec['almoco-saida']||DEFAULT['almoco-saida'];document.getElementById('md-almoco-volta').value=rec['almoco-volta']||DEFAULT['almoco-volta'];document.getElementById('md-saida').value=rec.saida||DEFAULT.saida;abrirModal('modal-dia')}
+function salvarDia(){
+    let e=document.getElementById('md-entrada').value,as=document.getElementById('md-almoco-saida').value,av=document.getElementById('md-almoco-volta').value,s=document.getElementById('md-saida').value;
+    let obj = { entrada: e, 'almoco-saida': as, 'almoco-volta': av, saida: s };
+    let err = validarHorariosInconsistentes(obj); if(err) { alert(err); return; }
+    data[_ek]=obj; delete data[_ek].folga; if(!e&&!as&&!av&&!s) delete data[_ek];
+    save(); fecharModal('modal-dia'); runApp(); showToast(' Atualizado!')
+}
+
+function mudarMesNavegacao(dir) {
+    triggerHaptic(); viewMonth += dir;
+    if(viewMonth > 11) { viewMonth = 0; viewYear++; } if(viewMonth < 0) { viewMonth = 11; viewYear--; }
+    let av = document.querySelector('.view.active').id;
+    if(av === 'view-folgas') renderFolgas(); if(av === 'view-escala') renderEscala(); if(av === 'view-historico') renderHistorico();
+}
+
+function aplicarFolgaLote(marcar) {
+    triggerHaptic();
+    let dowAlvo = parseInt(document.getElementById('select-lote-dow').value);
+    let totalDias = new Date(viewYear, viewMonth + 1, 0).getDate();
+    let cont = 0;
+    for(let d=1; d<=totalDias; d++) {
+        let date = new Date(viewYear, viewMonth, d);
+        if(date.getDay() === dowAlvo) {
+            let k = dk(date);
+            if(marcar) { data[k] = { folga: true }; cont++; } 
+            else { if(data[k] && data[k].folga) { delete data[k]; cont++; } }
+        }
+    }
+    save(); renderFolgas(); runApp(); showToast(` Alterado!`);
+}
+
+function renderFolgas(){
+    let nm = document.getElementById('folgas-mes-nome'); if(nm) nm.textContent=MONTHS[viewMonth] + ' ' + viewYear;
+    let grid=document.getElementById('month-grid'),first=new Date(viewYear,viewMonth,1).getDay(); if(!grid)return; grid.innerHTML='';
+    for(let i=0;i<first;i++){let e=document.createElement('div');e.className='mcell empty';grid.appendChild(e)}
+    let dias=new Date(viewYear,viewMonth+1,0).getDate();
+    for(let d=1;d<=dias;d++){
+        let date=new Date(viewYear,viewMonth,d),k=dk(date),isOff=!!(data[k]&&data[k].folga),cell=document.createElement('div');
+        cell.className='mcell'+(isOff?' off':''); cell.innerHTML='<div class="mdn">'+DAYS[date.getDay()]+'</div><div class="mdd">'+d+'</div>';
+        cell.onclick=()=>{ triggerHaptic(); toggleFolga(k,cell); }; grid.appendChild(cell);
+    }
+}
+function toggleFolga(k,cell){if(!data[k])data[k]={};if(data[k].folga){delete data[k];}else{data[k]={folga:true};}save();runApp();renderFolgas();}
+
+function renderStats(){
+    let y=now.getFullYear(),m=now.getMonth(),dias=0,folgas=0,min=0,total=new Date(y,m+1,0).getDate();
+    let diasEscaladosRestantes = 0, totalDiasUteisEscala = 0;
+    
+    for(let d=1;d<=total;d++){
+        let date=new Date(y,m,d), k=dk(date), rec=data[k]||{};
+        if(rec.folga){folgas++;continue}
+        totalDiasUteisEscala++;
+        if(rec.entrada&&rec.saida){
+            dias++; let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;
+            if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}
+            min+=mt-mi;
+        } else if (date > now) { diasEscaladosRestantes++; }
+    }
+    let sd = document.getElementById('stat-dias'); if(sd) sd.textContent=dias;
+    let sf = document.getElementById('stat-folgas'); if(sf) sf.textContent=folgas;
+    let horasReais = Math.floor(min/60);
+    let sh = document.getElementById('stat-horas'); if(sh) sh.textContent=horasReais+'h';
+    
+    let sp = document.getElementById('stat-projecao'); if(sp) sp.textContent = "Proj: " + Math.floor((min + (diasEscaladosRestantes * 440))/60) + "h";
+    
+    let metaMensalHorasMinutos = totalDiasUteisEscala * 440; 
+    let metaPorcentagem = metaMensalHorasMinutos > 0 ? Math.min(Math.round((min / metaMensalHorasMinutos) * 100), 100) : 0;
+    
+    let mpb = document.getElementById('meta-progress-bar'); if(mpb) mpb.style.width = metaPorcentagem + '%';
+    let mpt = document.getElementById('meta-porcentagem-texto'); if(mpt) mpt.textContent = metaPorcentagem + '%';
+    let mst = document.getElementById('meta-status-texto'); if(mst) mst.textContent = `${horasReais}h cumpridas de ${Math.floor(metaMensalHorasMinutos/60)}h no mês`;
+
+    renderGrafico();
+    renderTendenciaSparkline();
+}
+
+function renderTendenciaSparkline() {
+    let sparkBox = document.getElementById('sparkline-trend'); if(!sparkBox) return;
+    sparkBox.innerHTML = '';
+    let ultimosDias = [];
+    for(let i=10; i>=0; i--) {
+        let d = new Date(); d.setDate(now.getDate() - i);
+        let rec = data[dk(d)]; if(rec && !rec.folga && rec.entrada && rec.saida) ultimosDias.push(rec);
+    }
+    ultimosDias.slice(-5).forEach(rec => {
+        let ent=rec.entrada.split(':'), sai=rec.saida.split(':'), mt=(parseInt(sai[0])-parseInt(ent[0]))*60+(parseInt(sai[1])-parseInt(ent[1])), mi=0;
+        if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}
+        let saldo = (mt - mi) - 440;
+        let bar = document.createElement('div'); bar.className = 'spark-bar ' + (saldo >= 0 ? 'up' : 'down');
+        bar.style.height = Math.min(Math.max(Math.abs(saldo) / 4, 6), 24) + 'px';
+        sparkBox.appendChild(bar);
+    });
+}
+
+function renderBancoHoras(){
+    let baseMin = 0; try{ baseMin = parseInt(localStorage.getItem('banco_horas_base'))||0; }catch(e){}
+    let y=now.getFullYear(),m=now.getMonth(),total=new Date(y,m+1,0).getDate();
+    for(let d=1;d<=total;d++){
+        let date=new Date(y,m,d),k=dk(date),rec=data[k]||{};
+        if(!rec.folga&&rec.entrada&&rec.saida){
+            let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;
+            if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}
+            baseMin+= (mt-mi)-440;
+        }
+    }
+    let bhv = document.getElementById('banco-horas-valor');
+    if(bhv){
+        bhv.textContent=(baseMin>=0?'+':'')+Math.floor(Math.abs(baseMin)/60)+'h '+String(Math.abs(baseMin)%60).padStart(2,'0')+'m';
+        bhv.style.color=baseMin>=0?'var(--secondary)':'var(--primary)';
+    }
+}
+function ajustarBancoHoras(){
+    let abrir=0; try{abrir=parseInt(localStorage.getItem('banco_horas_base'))||0;}catch(e){}
+    let novo=prompt("Ajustar saldo base inicial (em minutos):",abrir);
+    if(novo!==null){ try{localStorage.setItem('banco_horas_base',parseInt(novo)||0);}catch(e){} runApp(); }
+}
+
+function exportarBackupJSON(){let dataStr="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(data)),dlAnchor=document.createElement('a');dlAnchor.setAttribute("href",dataStr);dlAnchor.setAttribute("download","backup_escala.json");document.body.appendChild(dlAnchor);dlAnchor.click();dlAnchor.remove();showToast(" Backup exportado!");}
+function importarBackupJSON(input){let file=input.files[0];if(!file)return;let reader=new FileReader();reader.onload=function(e){try{let parsed=JSON.parse(e.target.result);if(typeof parsed==='object'){data=parsed;save();runApp();showToast(" Restaurado!");}}catch(err){alert("Inválido");}};reader.readAsText(file);}
+function exportarCSV(){let csv="Data,Entrada,Intervalo Saída,Intervalo Retorno,Saída,Folga\n",y=now.getFullYear(),m=now.getMonth(),total=new Date(y,m+1,0).getDate();for(let d=1;d<=total;d++){let date=new Date(y,m,d),k=dk(date),rec=data[k]||{};csv+=`${k},${rec.entrada||''},${rec['almoco-saida']||''},${rec['almoco-volta']||''},${rec.saida||''},${rec.folga?'Sim':'Não'}\n`;}let blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});let url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=`escala_${m+1}.csv`;a.click();}
+function exportarPDFHTML(){let y=now.getFullYear(),m=now.getMonth(),total=new Date(y,m+1,0).getDate(),w=window.open();w.document.write(`<h2>Relatório Mensal</h2><table border="1" cellpadding="5" style="border-collapse:collapse;width:100%;">`);for(let d=1;d<=total;d++){let date=new Date(y,m,d),k=dk(date),rec=data[k]||{};w.document.write(`<tr><td>${d}/${m+1}</td><td>${rec.entrada||'--'}</td><td>${rec.saida||'--'}</td><td>${rec.folga?'Folga':'Escala'}</td></tr>`);}w.document.write(`</table>`);w.document.close();w.print();}
+
+function renderHistorico(){
+    let list=document.getElementById('hist-list'),html='',totalDays=new Date(viewYear,viewMonth+1,0).getDate(); if(!list)return;
+    let nm = document.getElementById('hist-mes-nome'); if(nm) nm.textContent=MONTHS[viewMonth] + ' ' + viewYear;
+    for(let d=totalDays;d>=1;d--){
+        let date=new Date(viewYear,viewMonth,d),k=dk(date),rec=data[k]||{},isOff=!!rec.folga,horas='—';
+        if(isOff){horas='\uFE0F'}else if(rec.entrada&&rec.saida){let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}horas=Math.floor((mt-mi)/60)+'h'}
+        html+='<div class="hist-item" onclick="abrirModalDia(\''+k+'\')"><div><strong>'+d+' de '+MONTHS[viewMonth].slice(0,3)+'</strong><br><small style="color:var(--text-muted)">'+DAYS[date.getDay()]+'</small></div><div><span style="font-family:var(--font-mono);font-weight:bold;">'+horas+'</span></div></div>'
+    }
+    list.innerHTML=html;
+}
+
+function renderEscala(){
+    let container=document.getElementById('escala-list'),total=new Date(viewYear,viewMonth+1,0).getDate(),semanas=[],semana=[]; if(!container)return;
+    let nm = document.getElementById('escala-mes-nome'); if(nm) nm.textContent=MONTHS[viewMonth]+' '+viewYear;
+    for(let d=1;d<=total;d++){let date=new Date(viewYear,viewMonth,d);semana.push(date);if(date.getDay()===0||d===total){semanas.push(semana);semana=[]}}
+    container.innerHTML='';
+    semanas.forEach((sem,idx)=>{
+        let block=document.createElement('div'); block.innerHTML='<div style="font-size:10px;color:var(--text-muted);margin:12px 0 6px;text-transform:uppercase;font-weight:bold;">Semana '+(idx+1)+'</div>';
+        sem.forEach(date=>{
+            let k=dk(date),rec=data[k]||{},isOff=!!rec.folga,isFuture=date>now,isToday=k===todayKey,cls='escala-day',numColor='muted',status='',horas='—',horarios='';
+            
+            if(isOff){cls+=' is-folga';numColor='green';status='\uFE0F Folga'}
+            else if(rec.entrada&&rec.saida){cls+=' is-trabalhou';numColor='blue';let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}horas=Math.floor((mt-mi)/60)+'h';status=' Trabalhou';horarios=rec.entrada+' - '+rec.saida}
+            else if(!isFuture){cls+=' is-pendente';status=' Pendente';horarios=DEFAULT.entrada+' - '+DEFAULT.saida}
+            else{status=' Trabalho';horarios=DEFAULT.entrada+' - '+DEFAULT.saida;horas='7h20'}
+            
+            if(isToday)cls+=' is-today';
+            let dayEl=document.createElement('div'); dayEl.className=cls;
+            dayEl.innerHTML='<div class="eday-date"><div class="eday-num '+numColor+'">'+date.getDate()+'</div><div class="eday-dow">'+DAYS[date.getDay()]+'</div></div><div class="eday-info"><div class="eday-status">'+status+'</div><div class="eday-horarios">'+horarios+'</div></div><div class="eday-horas">'+horas+'</div>';
+            dayEl.onclick=()=>abrirModalDia(k); block.appendChild(dayEl);
+        });
+        container.appendChild(block)
+    })
+}
+
+function renderGrafico(){
+    let y=now.getFullYear(), m=now.getMonth(), total=new Date(y,m+1,0).getDate(), semanas=[], semana=[];
+    let container=document.getElementById('grafico-container'); if(!container) return;
+    for(let d=1;d<=total;d++){ let date=new Date(y,m,d); semana.push(date); if(date.getDay()===0||d===total){semanas.push(semana);semana=[]}}
+    let horasPorSemana=semanas.map(sem=>{
+        let totalMin=0; sem.forEach(date=>{
+            if(date>now)return; let k=dk(date),rec=data[k]||{}; if(rec.folga)return;
+            if(rec.entrada&&rec.saida){
+                let a=rec.entrada.split(':'),b=rec.saida.split(':'),mt=(parseInt(b[0])-parseInt(a[0]))*60+(parseInt(b[1])-parseInt(a[1])),mi=0;
+                if(rec['almoco-saida']&&rec['almoco-volta']){let as=rec['almoco-saida'].split(':'),av=rec['almoco-volta'].split(':');mi=(parseInt(av[0])-parseInt(as[0]))*60+(parseInt(av[1])-parseInt(as[1]))}
+                totalMin+=mt-mi;
+            }
+        }); return totalMin;
+    });
+    let maxHoras=Math.max(...horasPorSemana, 2200), alturaMax=80;
+    container.innerHTML='<div class="bars-container">'+horasPorSemana.map((minutos,i)=>{
+        let alt = (minutos/maxHoras)*alturaMax;
+        return `<div class="bar-wrapper"><div class="bar-container-relative"><div class="bar past-bar" style="height:${Math.max(8,alt*0.8)}px"></div><div class="bar" style="height:${alt}px"></div></div><div class="bar-value">${Math.floor(minutos/60)}h</div><div class="bar-label">S${i+1}</div></div>`;
+    }).join('')+'</div>';
+}
+
+function abrirModal(id){document.getElementById(id).classList.add('open')}
+function fecharModal(id){document.getElementById(id).classList.remove('open')}
+function switchView(v){
+    triggerHaptic();
+    document.querySelectorAll('.view').forEach(e=>e.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(e=>e.classList.remove('active'));
+    document.getElementById('view-'+v).classList.add('active');
+    document.getElementById('nav-'+v).classList.add('active');
+    viewMonth = now.getMonth(); viewYear = now.getFullYear();
+    if(v=='historico')renderHistorico(); if(v=='folgas')renderFolgas(); if(v=='escala')renderEscala();
+    if(v=='hoje')runApp();
+}
+
+function limparTodosDados(){
+    try {
+        let pinSalvo = localStorage.getItem('app_pin');
+        if(pinSalvo && prompt(" Insira seu PIN:") !== pinSalvo) return;
+        localStorage.clear(); data={}; runApp(); switchView('hoje'); showToast(' Limpo!');
+    } catch(e){}
+}
+function showToast(m){let t=document.getElementById('toast');if(!t)return;t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2200)}
+
+let NOTIF_KEY='notificacoes_config', notificationTimer=null;
+function loadNotifConfig(){try{let s=localStorage.getItem(NOTIF_KEY);if(s)return JSON.parse(s)}catch(e){}return{enabled:true,horarios:['13:50','15:50','16:50','22:10']}}
+async function solicitarPermissaoNotificacao(){
+    try {
+        if(!('Notification'in window)) return false;
+        let r = await Notification.requestPermission();
+        if(r==='granted'){ showToast(' Ativo!'); renderNotificacoes(); startNotificationEngine(); return true; }
+    } catch(e){}
+    return false;
+}
+function renderNotificacoes(){
+    let container=document.getElementById('notif-container');if(!container)return;
+    let config=loadNotifConfig(),hasPermission=false;
+    try{hasPermission=Notification.permission==='granted';}catch(e){}
+    let badge=document.getElementById('notif-status-badge');if(badge)badge.textContent=hasPermission?' ATIVO':' INATIVO';
+    let rotulos=['Antecipar Entrada','Antecipar Intervalo','Antecipar Retorno','Antecipar Saída'],html='<div class="notif-horarios">';
+    rotulos.forEach((l,i)=>{ html+='<div class="notif-horario-row"><label>'+l+'</label><input type="time" id="notif-time-'+i+'" value="'+(config.horarios[i]||'14:00')+'"></div>'; });
+    html+='</div><div style="display:flex;gap:8px;margin-top:12px;"><button class="btn-notif" onclick="solicitarPermissaoNotificacao()">Permissão</button><button class="btn-notif" style="background:var(--primary);color:#fff;border:none;" onclick="salvarHorariosNotificacao()"> Salvar</button></div>';
+    container.innerHTML=html;
+}
+function salvarHorariosNotificacao(){
+    let novos=[]; for(let i=0;i<4;i++){let inp=document.getElementById('notif-time-'+i);if(inp)novos.push(inp.value)}
+    let c=loadNotifConfig(); c.horarios=novos; try{localStorage.setItem(NOTIF_KEY,JSON.stringify(c));}catch(e){}
+    showToast(' Salvo!'); startNotificationEngine();
+}
+function startNotificationEngine() {
+    try {
+        if(notificationTimer) clearInterval(notificationTimer);
+        if(!('Notification' in window) || Notification.permission !== 'granted' || isDayOff(now)) return;
+        notificationTimer = setInterval(() => {
+            let agoraString = new Date().toTimeString().slice(0,5), config = loadNotifConfig(), idx = config.horarios.indexOf(agoraString);
+            if(idx !== -1) {
+                let acoes = ['Bater Entrada', 'Bater Intervalo', 'Retornar do Intervalo', 'Bater Saída'];
+                new Notification(" Lembrete de Ponto", { body: `Ação necessária: ${acoes[idx]} (${agoraString})` });
+            }
+        }, 60000);
+    } catch(e){}
+}
+
+let startY = 0;
+window.addEventListener('touchstart', e => { if(window.scrollY === 0) startY = e.touches[0].pageY; }, {passive: true});
+window.addEventListener('touchmove', e => {
+    let currentY = e.touches[0].pageY, ind=document.getElementById('ptr-indicator');
+    if(ind && startY > 0 && currentY - startY > 70 && window.scrollY === 0) ind.style.height = '40px';
+}, {passive: true});
+window.addEventListener('touchend', () => {
+    let ind=document.getElementById('ptr-indicator');
+    if(ind && ind.style.height === '40px') { triggerHaptic(); now = new Date(); runApp(); setTimeout(() => { ind.style.height = '0'; }, 600); }
+    startY = 0;
+});
+
+window.addEventListener('DOMContentLoaded', () => {
+    try { recuperarBackupAutomaticoIDB(); } catch(e){}
+    try { verificarSenhaAcesso(); } catch(e){}
+    try { renderNotificacoes(); } catch(e){}
+});
+</script>
 </body>
 </html>
