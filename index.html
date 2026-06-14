@@ -54,26 +54,13 @@
   
   #ptr-indicator { height: 0; overflow: hidden; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--text-muted); font-weight: bold; transition: height 0.2s; }
   
-  .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
-  .stat-card { background: var(--bg-card); border-radius: 14px; padding: 12px; text-align: center; border: 1px solid var(--border); }
-  .stat-card .val { font-size: 20px; font-weight: 900; font-family: var(--font-mono); }
-  .stat-card .lbl { font-size: 10px; color: var(--text-muted); margin-top: 6px; line-height: 1.2; }
   .blue { color: var(--primary); } .green { color: var(--secondary); } .white { color: var(--text-main); } .warning { color: var(--warning); }
   
   .action-countdown-card { background: linear-gradient(135deg, var(--primary-rgba), transparent); border: 1px solid var(--primary); border-radius: 14px; padding: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; }
-  .countdown-timer { font-family: var(--font-mono); font-size: 22px; font-weight: 900; color: var(--primary); }
+  .countdown-timer { font-family: var(--font-mono); font-size: 24px; font-weight: 900; color: var(--primary); }
 
-  .meta-progress-container { margin-top: 8px; background: var(--bg-input); border-radius: 6px; height: 8px; overflow: hidden; width: 100%; position: relative; }
+  .meta-progress-container { margin: 10px 0; background: var(--bg-input); border-radius: 6px; height: 8px; overflow: hidden; width: 100%; position: relative; }
   .meta-progress-bar { background: var(--secondary); height: 100%; width: 0%; transition: width 0.4s ease; }
-
-  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-bottom: 16px; }
-  .day-cell { background: var(--bg-card); border: 1px solid var(--border); border-radius: 10px; padding: 8px 4px; text-align: center; cursor: pointer; }
-  .day-cell:active { transform: scale(0.95); }
-  .day-cell.work-day { border-color: var(--primary-rgba); }
-  .day-cell.off-day { border-color: var(--secondary-rgba); background: rgba(56,217,169,0.02); }
-  .day-cell.today-cell { background: var(--bg-input); border: 2px solid var(--primary); }
-  .day-cell .dn { font-size: 10px; color: var(--text-muted); margin-bottom: 2px; }
-  .day-cell .dd { font-size: 15px; font-weight: bold; }
   
   .ponto-card { background: var(--bg-card); border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
   .ponto-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
@@ -91,7 +78,13 @@
   .card-padrao { background: var(--bg-card); border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
   .card-header-flex { display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; }
   
-  .sparkline-box { display: flex; align-items: flex-end; gap: 3px; height: 24px; padding-left: 10px; }
+  .accordion-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; }
+  .accordion-content { display: none; margin-top: 14px; }
+  .accordion-content.open { display: block; }
+  .accordion-arrow { font-size: 12px; color: var(--text-muted); transition: transform 0.2s; }
+  .accordion-header.active .accordion-arrow { transform: rotate(90deg); }
+
+  .sparkline-box { display: flex; align-items: flex-end; gap: 3px; height: 20px; }
   .spark-bar { width: 4px; background: var(--text-muted); border-radius: 1px; min-height: 4px; }
   .spark-bar.up { background: var(--secondary); }
   .spark-bar.down { background: var(--primary); }
@@ -170,8 +163,13 @@
   .btn-notif { background: var(--bg-input); border: 1px solid var(--border); color: var(--text-main); padding: 10px; border-radius: 10px; cursor: pointer; font-weight: bold; flex: 1; text-align: center; font-size: 12px; }
   .hist-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); cursor: pointer; }
   
-  .banco-detalhe { font-size: 11px; color: var(--text-muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); }
-  .badge-extra { background: var(--warning); color: #000; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: bold; margin-left: 6px; }
+  .banco-detalhe { font-size: 11px; color: var(--text-muted); margin-top: 8px; display: flex; justify-content: space-between; align-items: center; }
+  .badge-extra { background: var(--warning); color: #000; padding: 2px 6px; border-radius: 10px; font-size: 9px; font-weight: bold; }
+  
+  .progresso-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; }
+  .progresso-item { display: flex; flex-direction: column; }
+  .progresso-lbl { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin-bottom: 2px; }
+  .progresso-val { font-size: 16px; font-weight: bold; font-family: var(--font-mono); }
 </style>
 </head>
 <body>
@@ -215,6 +213,8 @@
 </header>
 <main>
   <div class="view active" id="view-hoje">
+    
+    <!-- 1. BLOCO DE AÇÃO (Focado no Agora) -->
     <div class="action-countdown-card" id="countdown-card" style="display: none;">
       <div>
         <div style="font-size: 11px; text-transform: uppercase; color: var(--text-muted);" id="countdown-label">Próxima Ação</div>
@@ -223,17 +223,6 @@
       <div class="countdown-timer" id="countdown-clock">00:00:00</div>
     </div>
 
-    <div class="stats">
-      <div class="stat-card"><div class="val blue" id="stat-dias">0</div><div class="lbl">Dias<br>Trabalhados</div></div>
-      <div class="stat-card"><div class="val green" id="stat-folgas">0</div><div class="lbl">Folgas<br>no Mês</div></div>
-      <div class="stat-card">
-        <div class="val white" id="stat-horas">0h</div>
-        <div class="lbl">Horas Mês<br><span id="stat-projecao" style="color:var(--text-muted);font-size:9px;">Proj: --</span></div>
-      </div>
-    </div>
-
-    <div class="week-grid" id="week-grid"></div>
-    
     <div class="ponto-card">
       <div class="card-header-flex">
         <h2>⏱ Ponto de Hoje</h2>
@@ -246,37 +235,63 @@
       <div class="previsao-saida" id="previsao-saida-box"></div>
     </div>
 
-    <div class="card-padrao">
-      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); font-weight:bold; text-transform:uppercase;">
-        <span>🎯 Meta do Mês Corrente</span>
-        <span id="meta-porcentagem-texto" style="font-family:var(--font-mono); color:var(--text-main);">0%</span>
-      </div>
-      <div class="meta-progress-container">
-        <div class="meta-progress-bar" id="meta-progress-bar"></div>
-      </div>
-      <div style="font-size:11px; color:var(--text-muted); margin-top:6px;" id="meta-status-texto">0h de 0h necessárias cumpridas</div>
-    </div>
-    
-    <div class="card-padrao" id="banco-horas-card">
-      <h2 style="font-size:12px;color:var(--text-muted);margin-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;">📊 Banco de Horas Acumulado</h2>
-      <div style="display:flex;justify-content:between;align-items:center; width:100%;">
-        <div style="flex:1; display:flex; align-items:center; justify-content:space-between;">
-          <span id="banco-horas-valor" style="font-size:26px;font-weight:900;color:var(--secondary);font-family:var(--font-mono);">0h 00m</span>
-          <div class="sparkline-box" id="sparkline-trend" title="Tendência dos últimos 5 dias registrados"></div>
-        </div>
-        <button class="btn-sm" style="margin-left:14px;" onclick="ajustarBancoHoras()">Ajustar</button>
-      </div>
-      <div class="banco-detalhe" id="banco-horas-detalhe"></div>
-    </div>
-    
     <div class="card-padrao" id="resumo-card" style="display:none;">
       <h2 style="font-size:12px;color:var(--text-muted);margin-bottom:10px;text-transform:uppercase;">Resumo do Dia</h2>
       <div class="horas-big" id="horas-big" style="font-size:36px;font-weight:900;color:var(--primary);font-family:var(--font-mono);">—</div>
       <div id="res-ef" style="margin-top:8px; font-size:14px; line-height:1.4;"></div>
     </div>
+
+    <!-- 2. VISÃO GERAL (Métricas e Analytics) -->
+    <div style="font-size:11px; color:var(--text-muted); font-weight:bold; text-transform:uppercase; margin: 24px 0 10px 4px; letter-spacing: 0.5px;">Visão Geral do Mês</div>
+
+    <!-- NOVO CARD UNIFICADO DE PROGRESSO -->
+    <div class="card-padrao">
+      <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-muted); font-weight:bold; text-transform:uppercase; align-items: center;">
+        <span>🎯 Progresso Mensal</span>
+        <span id="meta-porcentagem-texto" style="font-size:20px; font-family:var(--font-mono); color:var(--text-main); font-weight:900;">0%</span>
+      </div>
+      
+      <div class="meta-progress-container">
+        <div class="meta-progress-bar" id="meta-progress-bar"></div>
+      </div>
+      
+      <div style="font-size:11px; color:var(--text-muted);" id="meta-status-texto">0h de 0h cumpridas</div>
+      
+      <div class="progresso-grid">
+        <div class="progresso-item">
+          <span class="progresso-lbl">Banco de Horas</span>
+          <div style="display:flex; align-items:center; gap:8px;">
+            <span id="banco-horas-valor" class="progresso-val" style="color:var(--secondary);">0h 00m</span>
+            <div class="sparkline-box" id="sparkline-trend" title="Tendência dos últimos 5 dias"></div>
+          </div>
+        </div>
+        <div class="progresso-item" style="align-items: flex-end; justify-content: center;">
+          <button class="btn-sm" onclick="ajustarBancoHoras()">Ajustar Banco</button>
+        </div>
+      </div>
+
+      <div class="progresso-grid" style="margin-top: 8px; padding-top: 8px;">
+        <div class="progresso-item">
+          <span class="progresso-lbl">Trabalhados / Folgas</span>
+          <span class="progresso-val" style="font-size:13px;"><span id="stat-dias" class="white">0</span> / <span id="stat-folgas" class="green">0</span> dias</span>
+        </div>
+        <div class="progresso-item" style="align-items: flex-end;">
+          <span class="progresso-lbl">Total / Projeção</span>
+          <span class="progresso-val" style="font-size:13px; color:var(--text-main);" id="stat-horas">0h <span id="stat-projecao" style="color:var(--text-muted); font-size:11px; font-weight:normal;">(Proj: --)</span></span>
+        </div>
+      </div>
+      
+      <div class="banco-detalhe" id="banco-horas-detalhe" style="border-top:1px solid var(--border); padding-top:8px; margin-top:10px;"></div>
+    </div>
     
-    <div class="card-padrao"><h2>📈 Comparativo Semanal (Atual vs Anterior)</h2><div id="grafico-container"></div></div>
-    <div class="card-padrao"><div class="card-header-flex" style="margin-bottom:0;"><h2>🔔 Lembretes Ativos</h2><span class="today-badge" style="background:var(--secondary);" id="notif-status-badge">ATIVO</span></div><div id="notif-container" style="margin-top:14px;"></div></div>
+    <!-- GRÁFICO SEMANAL COMO ACCORDION -->
+    <div class="card-padrao">
+      <div class="accordion-header" onclick="toggleAccordion(this)">
+        <h2 style="font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;">📈 Comparativo Semanal</h2>
+        <span class="accordion-arrow">▶</span>
+      </div>
+      <div class="accordion-content" id="grafico-container"></div>
+    </div>
   </div>
   
   <div class="view" id="view-folgas">
@@ -332,6 +347,15 @@
   </div>
 
   <div class="view" id="view-config">
+    <!-- NOVO LOCAL DO CARD DE NOTIFICAÇÕES -->
+    <div class="card-padrao">
+      <div class="card-header-flex" style="margin-bottom:0;">
+        <h2>🔔 Lembretes Ativos</h2>
+        <span class="today-badge" style="background:var(--secondary);" id="notif-status-badge">ATIVO</span>
+      </div>
+      <div id="notif-container" style="margin-top:14px;"></div>
+    </div>
+
     <div class="card-padrao">
       <h2>⚙️ Configurações e Segurança</h2>
       <p style="font-size:12px;color:var(--text-muted);margin:10px 0">Gerenciamento interno e customização</p>
@@ -402,6 +426,20 @@ function getSemanaAno(date) {
     let primeiroDia = new Date(ano, 0, 1);
     let dias = Math.floor((date - primeiroDia) / (24 * 60 * 60 * 1000));
     return Math.ceil((dias + primeiroDia.getDay() + 1) / 7);
+}
+
+function toggleAccordion(header) {
+    triggerHaptic();
+    header.classList.toggle('active');
+    let content = header.nextElementSibling;
+    content.classList.toggle('open');
+    let arrow = header.querySelector('.accordion-arrow');
+    if (content.classList.contains('open')) {
+        arrow.textContent = '▼';
+        renderGrafico();
+    } else {
+        arrow.textContent = '▶';
+    }
 }
 
 function calcularMinutosTrabalhados(rec) {
@@ -578,7 +616,6 @@ function runApp(){
     if(fab) fab.style.display = isOff ? 'none' : 'flex';
 
     atualizarBotaoSenhaVisual();
-    renderWeek();
     renderPonto();
     renderStats();
     renderBancoHoras();
@@ -603,8 +640,6 @@ function baterProximoPontoFAB() {
     data[todayKey] = data[todayKey] || {}; data[todayKey][proximo] = horariaAtual;
     save(); runApp(); showToast(`✅ ${LABELS[proximo]} batido: ${horariaAtual}`);
 }
-
-function renderWeek(){let g=document.getElementById('week-grid'),dow=now.getDay(),mon=new Date(now);if(!g)return;mon.setDate(now.getDate()-((dow===0?7:dow)-1));g.innerHTML='';for(let i=0;i<7;i++){let d=new Date(mon);d.setDate(mon.getDate()+i);let k=dk(d),isOff=isDayOff(d),isToday=k===todayKey,rec=data[k]||{},c=document.createElement('div');c.className='day-cell'+(isOff?' off-day':' work-day')+(isToday?' today-cell':'');c.innerHTML='<div class="dn">'+DAYS[d.getDay()]+'</div><div class="dd">'+d.getDate()+'</div>';c.onclick=()=>abrirModalDia(k);g.appendChild(c)}}
 
 function renderPonto(){
     let isOff=isDayOff(now),rec=data[todayKey]||{},b=document.getElementById('ponto-body');
@@ -787,9 +822,9 @@ function renderStats(){
     let sd = document.getElementById('stat-dias'); if(sd) sd.textContent=dias;
     let sf = document.getElementById('stat-folgas'); if(sf) sf.textContent=folgas;
     let horasReais = Math.floor(min/60);
-    let sh = document.getElementById('stat-horas'); if(sh) sh.textContent=horasReais+'h';
+    let sh = document.getElementById('stat-horas'); if(sh) sh.innerHTML=horasReais+'h <span id="stat-projecao" style="color:var(--text-muted);font-size:11px;font-weight:normal;">(Proj: --)</span>';
     
-    let sp = document.getElementById('stat-projecao'); if(sp) sp.textContent = "Proj: " + Math.floor((min + (diasEscaladosRestantes * 440))/60) + "h";
+    let sp = document.getElementById('stat-projecao'); if(sp) sp.textContent = `(Proj: ${Math.floor((min + (diasEscaladosRestantes * 440))/60)}h)`;
     
     let metaMensalHorasMinutos = totalDiasUteisEscala * 440; 
     let metaPorcentagem = metaMensalHorasMinutos > 0 ? Math.min(Math.round((min / metaMensalHorasMinutos) * 100), 100) : 0;
@@ -798,7 +833,10 @@ function renderStats(){
     let mpt = document.getElementById('meta-porcentagem-texto'); if(mpt) mpt.textContent = metaPorcentagem + '%';
     let mst = document.getElementById('meta-status-texto'); if(mst) mst.textContent = `${horasReais}h cumpridas de ${Math.floor(metaMensalHorasMinutos/60)}h no mês`;
 
-    renderGrafico();
+    let gCont = document.getElementById('grafico-container');
+    if(gCont && gCont.classList.contains('open')) {
+        renderGrafico();
+    }
     renderTendenciaSparkline();
 }
 
@@ -860,8 +898,8 @@ function renderBancoHoras(){
 }
 
 function ajustarBancoHoras() {
-    let atual = localStorage.getItem('banco_horas_base') || 0;
-    document.getElementById('banco-ajuste').value = atual;
+    let abrir = localStorage.getItem('banco_horas_base') || 0;
+    document.getElementById('banco-ajuste').value = abrir;
     abrirModal('modal-banco');
 }
 
@@ -886,7 +924,7 @@ function renderTendenciaSparkline() {
     ultimosDias.slice(-5).forEach(rec => {
         let saldo = calcularMinutosTrabalhados(rec) - 440;
         let bar = document.createElement('div'); bar.className = 'spark-bar ' + (saldo >= 0 ? 'up' : 'down');
-        bar.style.height = Math.min(Math.max(Math.abs(saldo) / 4, 6), 24) + 'px';
+        bar.style.height = Math.min(Math.max(Math.abs(saldo) / 4, 6), 20) + 'px';
         sparkBox.appendChild(bar);
     });
 }
@@ -1008,6 +1046,7 @@ function switchView(v){
     viewMonth = now.getMonth(); viewYear = now.getFullYear();
     if(v=='historico')renderHistorico(); if(v=='folgas')renderFolgas(); if(v=='escala')renderEscala();
     if(v=='hoje')runApp();
+    if(v=='config')renderNotificacoes();
 }
 
 function limparTodosDados(){
